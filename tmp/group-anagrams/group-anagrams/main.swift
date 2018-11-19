@@ -8,20 +8,28 @@
 
 import Foundation
 
-print("Hello, World!")
 
 class Solution {
     func groupAnagrams(_ strs: [String]) -> [[String]] {
-        var rd = NSMutableDictionary.init()
-        for (index,item) in strs.enumerated() {
-            print("idx = \(index), item = \(item)")
-            var ch = Array(item).sorted()
-            if rd.allKeys.contains(where: ch) {
-                
+        var rd = [String:[String]]()
+        for item in strs {
+            let key = String(Array(item).sorted())
+            if rd.keys.contains(key) {
+                var array = rd[key]
+                array?.append(item)
+                rd.updateValue(array!, forKey: key)
+            } else {
+                rd.updateValue([item], forKey:key )
             }
         }
-        
-        var ra = [[""]]
-        return ra
+        var result = [[String]]()
+        for item in rd.values {
+            result.append(item)
+        }
+        return result
     }
 }
+
+var s = Solution.init()
+var result = s.groupAnagrams(["sb","bs","abc","bca","dd","cba"])
+print("\(result)")
