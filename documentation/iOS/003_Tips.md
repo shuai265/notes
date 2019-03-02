@@ -17,3 +17,21 @@ if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"youtube
 }
 ```
 
+
+
+### 1.2 手势冲突
+
+
+
+```
+
+```
+
+
+
+### 1.3 view from xib
+
+
+
+## 2 NavigationBar
+
