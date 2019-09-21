@@ -9,7 +9,7 @@ iOS signature
 #### Code Signing Entitlements
 
 
-
+ 
 #### Code Signing Identity
 
 
@@ -37,8 +37,3 @@ iOS signature
 ### General
 
 #### Signing
-
-
-
-
-
