@@ -34,7 +34,7 @@ func printNodeList(_ node: ListNode) {
     print("\(arr)")
 }
 
-func deleteDupicates(_ head: ListNode) -> ListNode? {
+func deleteDuplicates(_ head: ListNode) -> ListNode? {
     let fake = ListNode(-1)
     fake.next = head
     var preNode = fake
@@ -62,7 +62,7 @@ func main() {
     let data = [1,1,2,3,3,3,3,4,4,4,5,5,6,6]
     let node = genList(data)
     printNodeList(node!)
-    let newNode = deleteDupicates(node!)
+    let newNode = deleteDuplicates(node!)
     printNodeList(newNode!)
 }
 
