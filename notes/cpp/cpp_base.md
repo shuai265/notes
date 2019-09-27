@@ -19,7 +19,7 @@ Standard Template Library, 标准模版看, Cpp 软件库.
     - unordered_map
     - unordered_multiset
     - unordered_multimap	分别类似于集合、多重集合、映射、多重映射，但使用哈希表实现。它的键（Keys）没有排序（operator<），相反必须存在一个从键类型到size_t的哈希函数、且要求键之间可以判等（operator==）。自C++11起进入语言标准。
-    
+
 
 1. vector
 动态数组, 可以动态添加删除元素, 所有元素必须是相同类型
@@ -69,3 +69,22 @@ vec.capacity() // 当前 vector 使用的空间的数量, >= size, 多数情况�
 system("pause");
 ```
 
+5. unordered_map
+```
+# c++11
+Defined in header <unordered_map>
+template<
+    class Key,
+    class T,
+    class Hash = std::hash<Key>,
+    class KeyEqual = std::equal_to<Key>,
+    class Allocator = std::allocator< std::pair<const Key, T> >
+> class unordered_map;
+
+Iterators
+    - begin: returns an iterator to the beginning
+    - end: returns an iterator to the end
+Lookup
+    - find: finds element with specific key
+
+```
