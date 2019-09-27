@@ -41,4 +41,6 @@ submission_id: 任务ID
 ...
 ```
 
-
+6.中文API
+https://leetcode-cn.com/api/problems/all/
+https://leetcode-cn.com/problems/longest-palindromic-substring
