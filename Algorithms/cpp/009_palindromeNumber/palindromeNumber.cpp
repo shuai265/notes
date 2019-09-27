@@ -55,7 +55,7 @@ bool palindromeNumber(int num) {
             i++;
         }
         int tail = num%10;
-        // cout << "head=" << head << ", tail=" << tail << endl;
+
         if (head == tail)
         {
             int newNum = (num - head*i - tail)/10;
