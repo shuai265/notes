@@ -11,6 +11,10 @@
         "map": "cpp",
         "string": "cpp",
         "string_view": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "variant": "cpp",
+        "any": "cpp",
+        "bitset": "cpp",
+        "__locale": "cpp"
     }
 }

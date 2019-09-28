@@ -21,36 +21,37 @@
  * Recursive approach is fine, implicit stack space does not count as extra space for this problem.
  */
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <any>
-#include <map>
-#include <list>
-// #include <variant>
-
-// typedef boost::variant<int, std::string> Value;
-
-using namespace std;
-
-struct Node {
+// Definition for a Node.
+class Node {
+public:
     int val;
-    Node *left;
-    Node *right;
-    Node *next;
+    Node* left;
+    Node* right;
+    Node* next;
+
+    Node() {}
+
+    Node(int _val, Node* _left, Node* _right, Node* _next) {
+        val = _val;
+        left = _left;
+        right = _right;
+        next = _next;
+    }
 };
 
-// Node genNode(vector<string: any> source) {
-//     Node node = Node();
-//     node.val = source["$id"];
-
-// };
-
-
-int main() {
-    // map<string,any> source = {"$id":"1","left":{"$id":"2","left":{"$id":"3","left":null,"next":null,"right":null,"val":4},"next":null,"right":{"$id":"4","left":null,"next":null,"right":null,"val":5},"val":2},"next":null,"right":{"$id":"5","left":{"$id":"6","left":null,"next":null,"right":null,"val":6},"next":null,"right":{"$id":"7","left":null,"next":null,"right":null,"val":7},"val":3},"val":1};
-    // map <string, int> s = {"str": 23};
-    list<string,int> s = {"str", 23};
-    cout << s << endl;
-    return 0;
-}
+class Solution {
+public:
+    Node* connect(Node* root) {
+        if (root != NULL && root->left != NULL && root->right != NULL) {
+            root->left->next = root->right;
+            if (root->next != NULL) {
+                root->right->next = root->next->left;
+            } else {
+                root->right->next = NULL;
+            }
+            connect(root->right);
+            connect(root->left);
+        } 
+        return root;
+    }
+};
