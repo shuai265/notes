@@ -88,3 +88,6 @@ Lookup
     - find: finds element with specific key
 
 ```
+
+6. map
+

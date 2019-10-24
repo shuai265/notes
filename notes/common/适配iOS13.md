@@ -54,3 +54,11 @@ DeviceToken 获取到的格式发生变化, 使用第三方推送受到影响, �
 ```
 
 8. LaunchImage 被弃用
+
+
+
+9. sceneDelegate
+把原本 appDelegate 拆分为 appDelegate 和 sceneDelegate, 分管不同生命周期的回调
+https://juejin.im/post/5d8b3ebc518825092202f4ab
+
+
