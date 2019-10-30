@@ -147,6 +147,15 @@ page
 32. 有那些对称加密和非对称加密方法,对称加密为什么比非对称加密性能好
 
 33. 静态库和动态库的区别? 自己制作的动态库和苹果动态库的区别?
+```
+* 静态库和动态库的区别
+1. 在 app 链接时，静态库会被完整地复制到可执行文件中，动态库则不会, 自己创建的动态库会拷贝到 .app 的 Framework 文件夹下.
+2. 程序运行时由系统动态加载到内存，供程序调用，系统只加载一次，多个程序共用，节省内存
+3. 一般如果是静态Framework的话，资源打包进Framework是读取不了的。静态Framework和.a文件都是编译进可执行文件里面的。只有动态Framework能在.app的Framework文件夹下看到，并读取.framework里的资源文件。
+* 自己制作的动态库和苹果动态库的区别
+1. 自己创建的动态库就在.app目录下的Framework文件夹里
+2. 自己创建的动态库只允许自己的 app 使用, 系统动态库所有 app 公用
+```
 
 34. 除了 json 还知道其他数据格式吗? protolbuf 和 json 的区别是什么, 为什么性能好?
 
@@ -234,9 +243,9 @@ runtime 维护了一个全局的 weak 表, 结构是 hash table, key 是被引�
 1. weak table 的线程安全, weak.h 文件中有注释写到使用了 spin lock 来保证线程安全, runtime 主要会在 resize 的时候修改 weak table 本身的数据
 2. weak table 中 kv 的线程安全, 主要靠 NSObject 来保证, NSObject 中对 weak 表的操作都有锁来保证线程安全
 3. 当一个对象正在执行 dealloc 的时候, 其他 weak 指针的获取也是线程安全的, 获取的值是 nil. 
-weak 指针的获取是通过 objc_loadWeakRetained 函数来实现的, 读取 weak 表有锁, 当 dealloc 开始时, 会标记 deallocating, 新增 weak 引用时会判断是否在执行 deallocating, 来觉得是否继续执行插入逻辑.
+weak 指针的获取是通过 objc_loadWeakRetained 函数来实现的, 读取 weak 表有锁, 当 dealloc 开始时, 会标记 deallocating, 新增 weak 引用时会判断是否在执行 deallocating, 来决定是否继续执行插入逻辑.
 
-* 区别
+* weak 和 assign 区别
 weak 用于修饰对象类型的 property, assign 常用于修饰 值类型. weak 修饰的 property 当指向的对象销毁时,会被置为 nil. assign 修饰的 property 不会被置为 nil, 可能出现野指针的问题.
 ```
 
@@ -246,6 +255,9 @@ O(1)
 ```
 
 62. NotificationCenter 的底层是怎么实现的?
+```
+
+```
 
 63. 消息转发的步骤
 ```
@@ -581,6 +593,19 @@ Dictionary 底层使用 hash map 存储,会调用 key 的 hash 函数来获取 h
 2. NSOperation
 ```
 
+128. 如何加快编译速度
+```
+1. Optimization Level
+Built Setting里的一个参数，Optimization Level是指编译器的优化层度，优化后的代码效率比较高，但是可读性比较差，且编译时间更长。
+2. pod里的Optimization Level
+我们在使用pod的时候，每一个pod其实都是一个target，它有自己的Optimization Level。cocoapods默认给每一个pod的Optimization Level设置的是Fastest, Smallest，也就是说执行所有的优化和减少内存占用空间。
+3. 设置xcode编译的线程数
+defaults write xcodebuild PBXNumberOfParallelBuildSubtasks 8
+4. Debug Information Format: 是否生成符号文件
+在工程对应Target的Build Settings中，找到Debug Information Format这一项，将Debug时的DWARF with dSYM file改为DWARF。
+5. 将Build Active Architecture Only改为Yes
+
+```
 
 ## 2.数据库
 1. 数据库索引
@@ -642,4 +667,6 @@ RLE算法，编写一个函数，实现统计字符次数的功能：例如输�
 9. [iOS Runtime详解](https://juejin.im/post/5ac0a6116fb9a028de44d717)
 10. [运行时Hook所有Block方法调用的技术实现](https://juejin.im/post/5ca0ca6e51882567e32fc44b)
 11. [weak指针的线程安全和自动置nil的深度探讨](https://www.jianshu.com/p/edbd1ec314aa)
-12. 
+12. [iOS里的动态库和静态库](https://www.jianshu.com/p/42891fb90304)
+13. [如何加快编译速度](https://www.zybuluo.com/qidiandasheng/note/587124)
+14. 
