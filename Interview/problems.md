@@ -107,10 +107,35 @@ page
 16. 信号量的应用
 
 17. dispatch_once 的线程安全是如何实现的
+```
+是线程安全的，不需要额外加锁
+void
+_dispatch_once(dispatch_once_t *predicate,
+		DISPATCH_NOESCAPE dispatch_block_t block)
+{
+	if (DISPATCH_EXPECT(*predicate, ~0l) != ~0l) {
+		dispatch_once(predicate, block);
+	} else {
+		dispatch_compiler_barrier();
+	}
+	DISPATCH_COMPILER_CAN_ASSUME(*predicate == ~0l);
+}
+
+- dispatch_once 为什么能做到既解决同步多线程问题又不影响性能呢？
+dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
+当onceToken= 0时，线程执行dispatch_once的block中代码
+当onceToken= -1时，线程跳过dispatch_once的block中代码不执行
+当onceToken为其他值时，线程被线程被阻塞，等待onceToken值改变
+```
 
 18. A B 两个单例对象互相调用的问题, 会产生什么结果
+```
+1. dispatch_once 嵌套调用没有问题 (A->B)
+2. 互相调用会造成死锁 (A->B->A)
+```
 
 19. 深拷贝与浅拷贝
+
 
 20. 从浏览器输入 url 到展示网页的过程 (注意网页缓存的问题)
 
@@ -177,18 +202,26 @@ page
 41. 什么是 runloop
 
 42. KVO 底层是怎么实现的
+创建子类, 重写 setter, 调用 
 
 43. MRC copy 怎么写 setter
 
 44. iOS 怎么做内存管理, ARC 是怎么实现的
+引用计数
 
 45. iOS 有哪些文件持久化的方法
+```
+```
 
 46. property 的修饰词有哪些
 
 47. atomic 为什么不能保证线程安全
+atomic 在 setter 中增加锁, 只能保证 setter 的线程安全. 当多线程同时修改堆中内容时, 仍然会有线程安全的问题.
 
 48. 怎么实现 hook 
+```
+method swizzling
+```
 
 49. block 的底层是怎么实现的, property 为 block 应该如何选择修饰词?
 ```
@@ -201,12 +234,18 @@ global, 数据区域(.data区),没有捕捉外部变量的block
 stack, 栈区,捕捉了外部变量,但block本身没有copy
 malloc, 堆区,捕捉了外部变量,有block本身没有copy, ARC下会有几种情况自动copy,block作为函数返回值时,block赋值给__strong指针,block作为 CocoaAPI中方法名含有 usingBLock 的方法参数时, block作为 GCD API的方法参数时
 4. 外部变量捕捉
+外部变量类型: global, static, 属性, 局部变量
+
 stack block, 不会对 aoto 类型的变量产生强引用
 malloc block, 会对根据 auto 变量的修饰符(__strong, __weak, __unsafe_unretain)做出相应的操作, 形成强引用或者弱引用
+
 5. hook block
 
 6. block 编译后会生成一个函数,把`内部捕捉的变量`作为参数传递给函数
 7. __block 修饰符会把修饰的对象封装成一个对象,解决block内部无法修改auto变量值的问题
+
+8. block 是对象吗?
+是对象, block 继承于 NSBlock, NSBlock 继承于 NSObject.
 ```
 
 50. 多线程间如何通讯
@@ -220,13 +259,38 @@ malloc block, 会对根据 auto 变量的修饰符(__strong, __weak, __unsafe_un
 54. static 关键词的作用
 
 55. 有哪些常用 llvm 命令
+```
+
+```
 
 56. 如何实现一个单例
 ```
-static singleT
+static ClassA *instance = nil;
++ (instancetype)sharedInstance {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [ClassA.alloc init];
+    });
+    return instance;
+}
+// 最好同时重载的函数
++ (id)allocWithZone:(struce _NSZone *)zone {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [super allocWithZone:zone];
+    });
+    return instance;
+}
++ (id)copyWithZone:(struct _NSZone *)zone {
+    return inst;
+}
++ (id)mutableCopyWithZone:(struct _NSZone *)zone {
+    return inst;
+}
 ```
 
 57. 线程和进程的区别? 他们之间的关系?
+
 
 58. UIView 的生命周期
 
@@ -252,6 +316,8 @@ weak 用于修饰对象类型的 property, assign 常用于修饰 值类型. wea
 61. hash table 查找的时间复杂度是什么?
 ```
 O(1)
+
+hash table 的 hash 冲突
 ```
 
 62. NotificationCenter 的底层是怎么实现的?
@@ -261,17 +327,42 @@ O(1)
 
 63. 消息转发的步骤
 ```
+1. 消息发送阶段
+objc_msgSend(receiver, selector)
+通过 isa 找到 class, 
+CacheLookup 查找 cache
+MethodTableLookup -> lookUpImpOrForward, 查找函数表
+找父类的 cache, 找父类的 method 表, 找到后缓存到当前类(子类)
+如果没有找到 IMP, 尝试动态消息处理, _class_resolveMethod(cls, sel, inst);
+
+消息转发阶段: 
+1. 动态方法解析
+_class_resolveMethod会向对象发送 +resolveInstanceMethod（实例对象）或 +resolveClassMethod（类对象）方法
+2. 重定向接收者
+- (id)forwardingTargetForSelector:(SEL)aSelector // 选择备援接收者重新发送消息
+methodSignatureForSelector // 抛出 doesNotRecognizeSelector 异常
+forwardInvocation // 消息无法处理
+3. 最后进行转发
+//必须重写这个方法，消息转发使用这个方法获得的信息创建NSInvocation对象。
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
+//这一步是最后机会将消息转发给其它对象，对象会将未处理的消息相关的selector，target和参数都封装在anInvocation中。forwardInvocation:像未知消息分发中心，将未知消息转发给其它对象。注意的是forwardInvocation:方法只有在消息接收对象无法正常响应消息时才被调用。
+- (void)forwardInvocation:(NSInvocation *)anInvocation
 
 ```
 
 64. 如何 debug crash
 ```
-
+1. 分析 crash 栈最终的异常的类型, 知道这个 crash 的触发范围
+2. 根据栈信息回溯, 找到出问题的代码范围, 定位 crash 场景
+3. 复现 crash 场景, 构造数据结构, 或者写测试 demo
+4. 修复 crash
+5. 测试, 看问题的场景是否还会 crash
 ```
 
 65. http 和 https 的区别? https 请求的流程?
 ```
-
+1. https 是在 http 基础上增加了 ssl 层
+2. https 流程
 ```
 
 66. iOS 多线程编程的工具
@@ -287,7 +378,9 @@ GCD, NSThread, NSOperation
 
 68. 一个对象 alloc 的时候做了哪些事情?
 
+
 69. block 中变量的生命周期
+
 
 70. FMDB 如何保证数据的一致性的?
 
@@ -305,9 +398,15 @@ GCD, NSThread, NSOperation
 
 74. safe area
 
-75. swift optional
+75. swift protocol 如何实现 optional
+```
+两种方式
+```
 
 76. runloop 有几种状态
+```
+
+```
 
 77. NSCache
 
@@ -335,8 +434,6 @@ while
 字符集: ASCII, GBK, Unicode
 编码方式: UTF-8(是Unicode的一种编码方式), GBK2312
 Base64
-
-
 ```
 
 85. 对线程的方式和他们的区别
@@ -348,14 +445,27 @@ Base64
 88. 属性的关键词
 
 89. assign 可以用于 OC 对象吗
+```
+可以, 和 unsafe_unretain 相同,不会增加被引用对象的引用计数,当被引用对象释放后,不会被置为 nil, 可能出现野指针的问题.
+```
 
 90. copy 和 strong 的区别
 
 91. weak 如何实现自动赋 nil
+```
+weak 表
+```
 
 92. 为什么不可变对象要用 copy
+```
+strong 的隐患: immutable 指针可以指向子类,可能被赋值一个 mutable 的对象, 如果子类是可以修改的, 不是我们期望的情况. 而使用 copy 即使赋值对象是 mutable 类型,可以获取一个 immutable 的对象.
+```
 
 93. Pod update 和 Pod install 的区别
+```
+update: pod repo update, 同时没有写版本的库, 会升级到最新 ?? 中版本??
+install: 直接按照 podfile.lock 文件中的版本安装库
+```
 
 94. layoutIfNeeded 和 setNeedsLayout 的区别
 
@@ -376,16 +486,21 @@ Base64
 102. 介绍项目，主要介绍自己强项一点的地方
 
 103. 数组copy后里面的元素会复制一份新的吗
-
+不会, 浅拷贝只会指针copy, 深拷贝也只是不完全深拷贝
 
 104. 数组的浅拷贝与深拷贝
+immutable -> immutable 是浅拷贝
+深拷贝
+immutable -> mutable
+mutable -> immutable
+mutable -> mutable
 
 105. TCP为什么是三次握手和四次挥手
 
 106. 你平时怎么解决网络请求的依赖关系：当一个接口的请求需要依赖于另一个网络请求的结果
 办法2：逻辑：在上一个网络请求的响应回调中进行下一网络请求的激活
 办法3：信号量
-办法4：group
+办法4：group, block enter, 
 
 107. 关于RAC你有怎样运用到解决不同API依赖关系
 ```
@@ -400,7 +515,7 @@ RAC: Reactive Cocoa
 
 
 110. 你认为自动布局怎么实现的
-解析：先提到系统提供的NSLayoutConstraint，再介绍Masonry怎样基于它的封装？
+解析：先提到系统提供的 NSLayoutConstraint，再介绍 Masonry怎样基于它的封装？
 
 然而面试官继续问AutoLayout原理是？它的原理就是一个线性公式！比如，创建约束，iOS6中新加入了一个类：NSLayoutConstraint。它的约束满足这个公式：
 
@@ -506,8 +621,14 @@ p, po, e, bt, n, po $n,
 CategoryA 中有 methodB, ClassB 中也有 methodB, 那么 B 对象调用 methodB 时, 执行哪一个?
 load 顺序: ClassA -> ClassB -> CategoryA -> CategoryB, 其中CategoryA,CategoryB的顺序不定,需要看编译器中设置文件的顺序.
 
-* 父类的方法, 会缓存在父类还是缓存在子类?
+* 子类调用父类的方法, 会缓存在父类还是缓存在子类?
+子类缓存
+
 ```
+参考: 
+[深入理解 Objective-C :方法缓存](https://tech.meituan.com/2015/08/12/deep-understanding-object-c-of-method-caching.html)
+[iOS 底层拾遗：objc_msgSend 与方法缓存](https://mp.weixin.qq.com/s/NVz_7ZzBrJrOLScmAIU8MA)
+
 
 119. 反射
 ```
@@ -530,7 +651,8 @@ target、selector、arguments、return value，
 
 121. weak 底层是如何实现线程安全的
 ```
-1. 
+1. weak table 是个全局 hash table, key 为被引用对象指针地址, value 为数组, 存储弱引用指针
+2. 
 ```
 
 122. bitcode 做了什么
@@ -545,7 +667,7 @@ target、selector、arguments、return value，
 - 对于其他 build, 编译器、链接器会检查代码是否满足开启 bitcode, 但并不会真的生成 bitcode
 ```
 
-123. @strongify和@weakify 两个宏
+123. @strongify 和 @weakify 两个宏
 
 
 124. wdwebimage 对于 tableviewCell 加载图片做了哪些优化
@@ -588,7 +710,9 @@ Dictionary 底层使用 hash map 存储,会调用 key 的 hash 函数来获取 h
 
 127. gcd 中 block 如何 cancel
 ```
-1. dispatch_block_cancel & dispatch_block_create
+1. gcd
+dispatch_block_cancel & dispatch_block_create
+dispatch_group_leave ??
 
 2. NSOperation
 ```
@@ -607,8 +731,46 @@ defaults write xcodebuild PBXNumberOfParallelBuildSubtasks 8
 
 ```
 
+129. category 为什么 property 不能生成 ivar
+```
+class 的内存布局在编译期就决定了, ivarlist 的 size 是固定的, 所以不能修改.
+那为什么 methodlist 可以修改?
+methodlist 是 数组指针 类型, 可以修改指向的数组来改变 methodlist.
+cache 和 methodlist 不同, cache 中 bucket 是封装在结构体中, 但原理是相同的.
+```
+
+130. 排序算法
+```
+- 稳定排序算法:
+冒泡排序（Bubble Sort） — O(n²)
+插入排序（Insertion Sort）— O(n²)
+桶排序（Bucket Sort）— O(n); 需要 O(k) 额外空间
+计数排序 (Counting Sort) — O(n+k); 需要 O(n+k) 额外空间
+合并排序（Merge Sort）— O(nlogn); 需要 O(n) 额外空间
+二叉排序树排序 （Binary tree sort） — O(n log n) 期望时间; O(n²)最坏时间; 需要 O(n) 额外空间
+基数排序（Radix sort）— O(n·k); 需要 O(n) 额外空间
+
+- 常见的不稳定排序算法有:
+选择排序（Selection Sort）— O(n²)
+希尔排序（Shell Sort）— O(nlogn)
+堆排序（Heapsort）— O(nlogn)
+快速排序（Quicksort）— O(nlogn) 期望时间, O(n²) 最坏情况; 对于大的、乱数串行一般相信是最快的已知排序
+```
+
+131. 给一个类添加方法的途径
+```
+category
+
+???
+子类?
+消息转发?
+```
+
+
 ## 2.数据库
 1. 数据库索引
+[数据库索引到底是什么，是怎样工作的？](https://blog.csdn.net/weiliangliang111/article/details/51333169)
+一个索引是存储的表中一个特定列的值数据结构（最常见的是B-Tree）。索引是在表的列上创建。所以，要记住的关键点是索引包含一个表中列的值，并且这些值存储在一个数据结构中。
 
 2. 为什么用fmdb
 
@@ -669,4 +831,16 @@ RLE算法，编写一个函数，实现统计字符次数的功能：例如输�
 11. [weak指针的线程安全和自动置nil的深度探讨](https://www.jianshu.com/p/edbd1ec314aa)
 12. [iOS里的动态库和静态库](https://www.jianshu.com/p/42891fb90304)
 13. [如何加快编译速度](https://www.zybuluo.com/qidiandasheng/note/587124)
-14. 
+14. [细说GCD（Grand Central Dispatch）如何用](https://github.com/ming1016/study/wiki/%E7%BB%86%E8%AF%B4GCD%EF%BC%88Grand-Central-Dispatch%EF%BC%89%E5%A6%82%E4%BD%95%E7%94%A8)
+15. [iOS Masonry学习和探究](https://www.jianshu.com/p/f7e349bfffd5LIUshuaiLP)
+16. [神经病院 Objective-C Runtime 住院第二天——消息发送与转发](https://halfrost.com/objc_runtime_objc_msgsend/#1)
+17. [Objc Runtime 总结](https://ming1016.github.io/2015/04/01/objc-runtime/)
+18. [当别人问Category为什么不能添加属性](https://www.jianshu.com/p/eebc2acd7da0)
+19. [Blocks Programming Topics](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Blocks/Articles/00_Introduction.html)
+20. [从 Block 谈堆栈](https://joakimliu.github.io/2018/03/18/Block-heap-stack/)
+21. [iOS多线程：『NSOperation、NSOperationQueue』详尽总结](https://juejin.im/post/5a9e57af6fb9a028df222555)
+22. [iOS RunTime之二：类结构](https://juejin.im/post/5d6917dd5188257b2a6b2b22#heading-0)
+23. [iOS底层原理总结 - 探寻OC对象的本质](https://juejin.im/post/5ac81c75518825556534c0af)
+24. [iOS开发·runtime原理与实践: 消息转发篇(Message Forwarding)](https://juejin.im/post/5ae96e8c6fb9a07ac85a3860)
+25. [温故知新SEL/MethodSignature/Invocation](https://www.jianshu.com/p/49151a79ac6a)
+26. [从 Auto Layout 的布局算法谈性能](https://draveness.me/layout-performance)

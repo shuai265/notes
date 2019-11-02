@@ -63,8 +63,3 @@ class Solution {
         return preHead.next
     }
 }
-
-func p() {
-    print("xxx")
-}
-p()

@@ -13,6 +13,7 @@ class Solution {
     func generateParenthesis(_ n: Int) -> [String] {
         var result: [String] = []
         result = []
+
         // var l = n
         // var r = n
         // let substr = self.generateParenthesis(n-1)
