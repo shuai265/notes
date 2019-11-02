@@ -766,6 +766,8 @@ category
 消息转发?
 ```
 
+132. 图片有两种无损压缩算法, 一个压缩到 10k, 一个压缩到 100k, 两种的内存占用会是怎样的?
+
 
 ## 2.数据库
 1. 数据库索引
@@ -844,3 +846,4 @@ RLE算法，编写一个函数，实现统计字符次数的功能：例如输�
 24. [iOS开发·runtime原理与实践: 消息转发篇(Message Forwarding)](https://juejin.im/post/5ae96e8c6fb9a07ac85a3860)
 25. [温故知新SEL/MethodSignature/Invocation](https://www.jianshu.com/p/49151a79ac6a)
 26. [从 Auto Layout 的布局算法谈性能](https://draveness.me/layout-performance)
+27. [iOS中流(Stream)的使用](http://southpeak.github.io/2014/07/17/ioszhong-liu-stream-de-shi-yong/)
