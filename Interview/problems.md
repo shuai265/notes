@@ -48,23 +48,33 @@ Quality of Service(QoS)
   4. 工程结构, 增加 scene, 主要为 iPad 和 mac 多窗口服务
   5. DeviceToken 获取, 格式发生变化, 可能影响推送
   6. 废弃UIWebView APIs
-  7. Dark mode, 增加systemColor, dynamicColor, UIImage, blur样式, XCode 支持调试暗黑模式
+  7. Dark mode, 增加systemColor, dynamicColor, UIImage, blur样式, XCode 支持调试暗黑模式 (WWDC2019)
   8. KVC 限制, set 系统私有 value 会导致 crash
   9. sign in with apple 
   10. @available 底层实现更新, XCode11 编译的包, 会导致 XCode10 编译出错
 ```
 
 7. swift 初始化的修饰符 DESIGNATED，CONVENIENCE 和 REQUIRED
+```
+
+```
 
 8. 为什么用fmdb, fmdb 里面做了那些事情?
+```
+
+```
+
 
 9. iOS autolayout 是怎么实现的, 如果让你来做，你会怎么实现。使用过程中有哪些需要注意的地方
+
 
 10. 设计一个发朋友圈断网重试的上传逻辑,数据库怎么设计
 ```
 1. 网络中断时把数据写在本地数据库
 2. 检测网络变化, 有网络时把数据上传到服务器
-3. 
+
+-----
+缓存所有网络请求
 ```
 
 11. ios 12 是怎么优化启动速度的
@@ -104,7 +114,9 @@ page
 
 15. urlsession 下载文件如何监控进度
 
+
 16. 信号量的应用
+
 
 17. dispatch_once 的线程安全是如何实现的
 ```
@@ -131,13 +143,14 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 18. A B 两个单例对象互相调用的问题, 会产生什么结果
 ```
 1. dispatch_once 嵌套调用没有问题 (A->B)
-2. 互相调用会造成死锁 (A->B->A)
+2. 循环调用会造成死锁 (A->B->A)
 ```
 
 19. 深拷贝与浅拷贝
 
 
 20. 从浏览器输入 url 到展示网页的过程 (注意网页缓存的问题)
+
 
 21. 如何 KVO multableArray 的 count 
 * count 为 readonly, 不能被子类重载 setter, 所以无法 kvo
@@ -424,6 +437,9 @@ while
 ```
 
 81. 怎么实现LRU
+```
+hash map + 双向链表
+```
 
 82. MVC 的一些缺点
 
@@ -436,7 +452,7 @@ while
 Base64
 ```
 
-85. 对线程的方式和他们的区别
+85. 多线程的方式和他们的区别
 
 86. 队列和线程的关系
 
@@ -755,13 +771,20 @@ cache 和 methodlist 不同, cache 中 bucket 是封装在结构体中, 但原�
 希尔排序（Shell Sort）— O(nlogn)
 堆排序（Heapsort）— O(nlogn)
 快速排序（Quicksort）— O(nlogn) 期望时间, O(n²) 最坏情况; 对于大的、乱数串行一般相信是最快的已知排序
+
+下列什么排序算法是稳定的
+A.归并排序
+B.堆排序
+C.冒泡排序
+D.快速排序
 ```
 
 131. 给一个类添加方法的途径
 ```
-category
+1. category
+2. class_addMethod
 
-???
+
 子类?
 消息转发?
 ```
@@ -769,6 +792,41 @@ category
 132. 图片有两种无损压缩算法, 一个压缩到 10k, 一个压缩到 100k, 两种的内存占用会是怎样的?
 
 132. 横竖屏切换时, 布局的处理
+
+133. id<NSObject> 的含义
+id<NSObject>是指针，它要求它指向的类型要实现NSObject protocol
+
+134. 所有的类都继承自 NSObject
+NSProxy 不是继承自 NSObject, 但符合 NSObject 协议
+
+135. http 网络优化
+[iOS网络模块优化（失败重发、缓存请求有网发送）](https://www.cnblogs.com/ziyi--caolu/p/8176331.html)
+```
+1. NSURLCache, Last-Modified、ETag //做缓存,保证资源修改后能拉去新的内容
+2. 数据压缩: protobuf, WebP
+3. 弱网：2G、3G、4G、wifi下设置不同的超时时间
+4. 失败重发、缓存请求有网发送
+5. DNS 优化,默认映射IP作为配置文件存到包里
+6. 大文件分块下载
+```
+
+136. 为什么 http 网络请求无法充分利用带宽
+[为什么多线程下载能加速？](https://www.zhihu.com/question/19914902/answer/33647099)
+```
+TCP 拥塞控制不精准
+直接原因是 window size 不够大。然而根本原因其实并非 delay ，“时分复用”系统的类比也不大对，应该是 TCP congestion control 导致的。
+然而实际情况并非如此。一个网络中并不仅仅有你这么一个连接，单说两个端点处都肯定是如此，更不用说中间大家共用的网络线路了。这种情况下， TCP 的 congestion control 机制就会起作用，通过调节 window size 来避免出现拥塞，因为一旦出现阻塞丢包对整个网络和自身都是很不好的。一般来说最终 window size 无法达到上面说的“理想值”，从而使得传输需要停下来等 ACK ，带宽也就不能被“充分利用”。
+...
+```
+
+137. 收集 crash
+
+138. 类簇
+
+139. 图片三级缓存
+安卓上的概念: RAM,ROM,HTTP
+
+
 
 
 ## 2.数据库
@@ -849,3 +907,7 @@ RLE算法，编写一个函数，实现统计字符次数的功能：例如输�
 25. [温故知新SEL/MethodSignature/Invocation](https://www.jianshu.com/p/49151a79ac6a)
 26. [从 Auto Layout 的布局算法谈性能](https://draveness.me/layout-performance)
 27. [iOS中流(Stream)的使用](http://southpeak.github.io/2014/07/17/ioszhong-liu-stream-de-shi-yong/)
+28. [Block hook 正确姿势？](https://juejin.im/post/5c653921e51d457fa676eafc)
+29. [runtime动态创建类、添加方法、添加实例变量](https://www.jianshu.com/p/c769f64c1357)
+30. [https运行原理解析笔记](https://coolcao.com/2018/08/06/https/)
+
