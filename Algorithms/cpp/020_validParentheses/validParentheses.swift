@@ -31,7 +31,6 @@ class Solution {
                 if idxList[idxList.count-1] == rightIdx {
                     idxList.removeLast()
                 } else {
-                    // print("not equal, tmp=\(tmp[tmp.index(before: tmp.endIndex)]), c = \(c)")
                     return false
                 }
             }
