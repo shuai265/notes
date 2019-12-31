@@ -29,32 +29,27 @@ class Solution {
         var m = (l+r)/2
         
         while(l != r && target != nums[m]) {
-            print("begin: l = \(l), m = \(m), r = \(r)")
-            
+            // print("begin: l = \(l), m = \(m), r = \(r)")            
             if nums[m] >= nums[l] {                
                 // cutpoint 在右侧
                 if target > nums[m] || target < nums[l] {
                     // 右侧
-                    print("1")
                     l = m + 1
                 } else {
                     // 左侧
-                    print("2")
                     r = m - 1
                 }
             } else if nums[m] < nums[l] {
                 // cutpoint 在左侧或中间
                 if target < nums[m] || target >= nums[l] {
                     // target 在左侧
-                    print("3")
                     r = m - 1
                 } else {
-                    print("4")
                     l = m + 1
                 }
             } 
             m = (l+r)/2
-            print("end: l = \(l), m = \(m), r = \(r)")
+            // print("end: l = \(l), m = \(m), r = \(r)")
         }
         if (m < nums.count && target == nums[m]) {
             result = m
