@@ -10,28 +10,18 @@
  * 如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的分治法求解。 
  */
 
+// 方法1: 遍历 O(n)
 class Solution {
     func maxSubArray(_ nums: [Int]) -> Int {
         var ans: Int = Int.min
         var sum: Int = 0
 
-        // for (index, num) in nums.enumerated() {
         for num in nums {
-            var tmp = sum + num
-            // if num > 0, sum < 0 {
-            //     sum = num 
-            // } else if num > 0, sum > 0 {
-            //     sum += num 
-            // } else {
-            //     sum += num 
-            // }
-
             if sum < 0, num > sum {
                 sum = num 
             } else {
                 sum += num 
             }
-
             if sum > ans {
                 ans = sum
             }
@@ -39,6 +29,20 @@ class Solution {
         return ans
     }
 }
+
+// 方法2: 分治法
+/**
+ * 定义基本情况。
+ * 将问题分解为子问题并递归地解决它们。
+ * 合并子问题的解以获得原始问题的解。
+ */
+class Solution2 {
+    func maxSubArray(_ nums: [Int]) -> Int {
+
+    }
+}
+
+
 
 // let nums = [-2,1,-3,4,-1,2,1,-5,4]
 // let nums = [-2]

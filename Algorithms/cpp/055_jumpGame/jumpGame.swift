@@ -44,6 +44,7 @@ class Solution {
     }
 }
 
+// 从后向前
 class Solution2 {
     func canJump(_ nums: [Int]) -> Bool {
         return jumpHelper(nums, nums.count-1)
@@ -52,11 +53,7 @@ class Solution2 {
     func jumpHelper(_ nums: [Int], _ pos: Int) -> Bool {
         
         if pos == 0 {
-            if nums[pos] > 0 {
-                return true
-            } else {
-                return false
-            }
+            return true
         }
         for i in 1...pos {
             if nums[pos-i] >= i { // 可以跳
