@@ -25,7 +25,7 @@
 **********************************************************************************/
 
 class Solution {
-    func subset(_ nums: [Int]) -> [[Int]] {
+    func subsets(_ nums: [Int]) -> [[Int]] {
         var ans: [[Int]] = []
         var current: [Int] = []
         subsetHelper(nums, 0, &current, &ans)
@@ -45,5 +45,5 @@ class Solution {
 }
 
 let nums = [1,2,3]
-let ans = Solution().subset(nums) 
+let ans = Solution().subsets(nums) 
 print("\(ans)")
