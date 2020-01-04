@@ -28,26 +28,24 @@
  *               
  **********************************************************************************/
 
-import Foundation
+// import Foundation
 
 class Solution {
     func uniquePaths(_ m: Int, _ n: Int) -> Int {
-        print("start \(Date().description(with: Locale.current))")
+        // print("start \(Date().description(with: Locale.current))")
         if (m==1 || n==1) {
             return 1
         }
         let result = uniquePaths(m-1, n) + uniquePaths(m, n-1)
-        print("start \(Date().description(with: Locale.current))")
+        // print("end \(Date().description(with: Locale.current))")
         return result
     }
 }
 
 class Solution2 {
     func uniquePaths(_ m: Int, _ n: Int) -> Int {
-        print("start \(Date().description(with: Locale.current))")
         var map: [String: Int] = [:]
         let result = uniquePathsHelper(m, n, &map)
-        print("start \(Date().description(with: Locale.current))")
         return result
     }
     func uniquePathsHelper(_ m: Int, _ n: Int, _ map: inout [String: Int]) -> Int {

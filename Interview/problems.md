@@ -85,13 +85,20 @@ Quality of Service(QoS)
 1. 区别
 宏: 编译期间替换代码,如果有重复,取最近的一个
 static: 运行期间存储到静态存储区
+
 2. 两个m文件中有相同的定义时
 宏: 可以编译
-static: 可以编译, 但 .h 文件中有相同的定义时无法编译, 报错有重复定义.
+static: 需要看情况
+全局静态变量+局部静态变量，不可以编译
+全局静态变量+全局静态变量，不可以编译
+局部静态变量+局部静态变量，可以编译
 ```
 
 13. iOS class 内存布局
 ```
+================
+# class 的内存布局
+
 struct objc_class {
     Class isa  OBJC_ISA_AVAILABILITY;
 #if !__OBJC2__
@@ -101,12 +108,25 @@ struct objc_class {
     long info                                                OBJC2_UNAVAILABLE;
     long instance_size                                       OBJC2_UNAVAILABLE;
     struct objc_ivar_list *ivars                             OBJC2_UNAVAILABLE;
-    struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE;
+    struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE; //二级指针， methodLists 是一个二维数组
     struct objc_cache *cache                                 OBJC2_UNAVAILABLE;
     struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;
 #endif
 
 } OBJC2_UNAVAILABLE;
+
+===================
+# category 的内存布局
+
+struct category_t {
+    const char *name;
+    classref_t cls;
+    struct method_list_t *instanceMethods;
+    struct method_list_t *classMethods;
+    struct protocol_list_t *protocols;
+    struct property_list_t *instanceProperties;
+};
+
 ```
 
 14. app 启动性能优化(抖音启动性能优化)
@@ -153,7 +173,7 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 
 
 21. 如何 KVO multableArray 的 count 
-* count 为 readonly, 不能被子类重载 setter, 所以无法 kvo
+* count 为 readonly, 不能被子类重载 setter, 所以无法 kvo ？？存疑
 
 22. kvo 的实现原理
 ```
@@ -224,9 +244,17 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 
 45. iOS 有哪些文件持久化的方法
 ```
+userDefault
+coreData
+sqlite
+archive
 ```
 
 46. property 的修饰词有哪些
+weak/strong/assign
+readonly/readwrite
+nonnull/nullable
+atomic/nonatomic
 
 47. atomic 为什么不能保证线程安全
 atomic 在 setter 中增加锁, 只能保证 setter 的线程安全. 当多线程同时修改堆中内容时, 仍然会有线程安全的问题.
@@ -273,7 +301,7 @@ malloc block, 会对根据 auto 变量的修饰符(__strong, __weak, __unsafe_un
 
 55. 有哪些常用 llvm 命令
 ```
-
+po, p, e, bt
 ```
 
 56. 如何实现一个单例
@@ -806,7 +834,7 @@ NSProxy 不是继承自 NSObject, 但符合 NSObject 协议
 2. 数据压缩: protobuf, WebP
 3. 弱网：2G、3G、4G、wifi下设置不同的超时时间
 4. 失败重发、缓存请求有网发送
-5. DNS 优化,默认映射IP作为配置文件存到包里
+5. DNS 优化,默认映射IP作为配置文件存到包里, HttpDNS:使用指定 dns 服务器获取 IP
 6. 大文件分块下载
 ```
 
@@ -910,4 +938,6 @@ RLE算法，编写一个函数，实现统计字符次数的功能：例如输�
 28. [Block hook 正确姿势？](https://juejin.im/post/5c653921e51d457fa676eafc)
 29. [runtime动态创建类、添加方法、添加实例变量](https://www.jianshu.com/p/c769f64c1357)
 30. [https运行原理解析笔记](https://coolcao.com/2018/08/06/https/)
+31. [史上最详细的iOS之事件的传递和响应机制-原理篇](https://www.jianshu.com/p/2e074db792ba)
+32. [iOS图像最佳实践总结](https://juejin.im/post/5c84bd676fb9a049e702ecd8#heading-10)
 

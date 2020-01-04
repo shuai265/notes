@@ -9,6 +9,7 @@
 *               
 **********************************************************************************/
 
+// 解法1: 遍历，O(n2)
 class Solution {
     func merge(_ intervals: [[Int]]) -> [[Int]] {
         var ans: [[Int]] = []
@@ -34,20 +35,6 @@ class Solution {
                 }
                 tmpAns.append(currentNums)
                 ans = tmpAns
-                // let lasPos = ans.count-1
-                // var lastNums = ans[lasPos]
-                // let currentNums = intervals[i]
-                // if (currentNums[0] > lastNums[1] || currentNums[1]<lastNums[0]) {
-                //     ans.append(currentNums)
-                // } else {// MERGE
-                //     if currentNums[0] < lastNums[0] {
-                //         lastNums[0] = currentNums[0]
-                //     }
-                //     if currentNums[1] > lastNums[1] {
-                //         lastNums[1] = currentNums[1]
-                //     }
-                //     ans[lasPos] = lastNums
-                // }
             } else {
                 ans.append(currentNums)
             }
@@ -55,6 +42,8 @@ class Solution {
         return ans
     }
 }
+
+// 解法2: 先给所有数组排序，在merge
 
 // let intervals = [[1,3],[2,6],[8,10],[15,18]]
 

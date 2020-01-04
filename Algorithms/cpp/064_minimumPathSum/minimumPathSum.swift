@@ -64,7 +64,7 @@ class Solution2 {
                 }
                 // newRow.append(minVal + grid[i][j])
                 result = minVal + grid[i][j]
-                print("(\(i),\(j)), val=\(result), minVal=\(minVal), grid[i][j]=\(grid[i][j])")
+                // print("(\(i),\(j)), val=\(result), minVal=\(minVal), grid[i][j]=\(grid[i][j])")
                 newRow.append(result)
                 newGrid[i] = newRow
             }

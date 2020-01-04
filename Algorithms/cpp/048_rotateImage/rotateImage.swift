@@ -12,20 +12,16 @@ class Solution {
         let n = matrix.count
         for x in 0..<n/2 {
             for y in x..<n-1-x {
-                // pos (i, j)
                 swap(&matrix, x, y, n)
             }
         }
     }
 
-    func swap(_ matrix: inout [[Int]], _ x: Int, _ y: Int, _ n: Int) {
-        print("swap (\(x),\(y))")
-        
+    func swap(_ matrix: inout [[Int]], _ x: Int, _ y: Int, _ n: Int) {       
         var sourceVal = matrix[x][y]
         var i = x
         var j = y
         repeat {
-            // print("source (\(i),\(j)), sourceVal=\(sourceVal)")
             let t = i
             i = j
             j = n - t - 1
