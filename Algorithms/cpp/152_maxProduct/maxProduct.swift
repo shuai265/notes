@@ -39,6 +39,7 @@ class Solution2 {
     }
 }
 
+// 动态规划
 class Solution3 {
     func maxProduct(_ nums: [Int]) -> Int {
         var max = Int.min

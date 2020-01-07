@@ -22,6 +22,17 @@ class Solution {
 
 class Solution2 {
     func singleNumber(_ nums: [Int]) -> Int {
-        return 0
+        var numSet = Set<Int>()
+        for num in nums {
+            if numSet.contains(num) {
+                numSet.remove(num)
+            } else {
+                numSet.insert(num)
+            }
+        }
+        for num in numSet {
+            return num
+        }
+        return -1
     }
 }

@@ -23,11 +23,12 @@ class MinStack {
     }
     
     func pop() {
-        if stack.last == min {
-            updateMin()
-        }
         if stack.count > 0 {
+            let lastVal = stack.last
             stack.removeLast()
+            if lastVal == min {
+                updateMin()
+            }
         }
     }
     
@@ -51,7 +52,6 @@ class MinStack {
         }
     }
 }
-
 /**
  * Your MinStack object will be instantiated and called as such:
  * let obj = MinStack()

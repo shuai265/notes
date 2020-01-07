@@ -27,7 +27,6 @@ class Solution {
         var node = head
         while node != nil {
             let nextNode = node!.next
-            // insert(node!, &nodeList, 0, nodeList.count)
             insert(node!, &nodeList)
             node = nextNode
         }
@@ -35,11 +34,11 @@ class Solution {
     }
 
     func insert(_ node: ListNode, _ nodeList: inout [ListNode]) {
-        print("start with \(node.val), nodeList = \(nodeToList(nodeList.count > 0 ? nodeList[0]: nil))")
+        // print("start with \(node.val), nodeList = \(nodeToList(nodeList.count > 0 ? nodeList[0]: nil))")
         
         node.next = nil
         if nodeList.count == 0 {
-            print("append \(node.val)")
+            // print("append \(node.val)")
             nodeList.append(node)
             return
         }
@@ -59,12 +58,12 @@ class Solution {
             leftNode.next = node
         }
         if low < nodeList.count {
-            print("insert \(node.val), at \(low)")
+            // print("insert \(node.val), at \(low)")
             let rightNode = nodeList[low]
             node.next = rightNode
             nodeList.insert(node, at: low)
         } else {
-            print("append \(node.val)")
+            // print("append \(node.val)")
             nodeList.append(node)
         }
     }
