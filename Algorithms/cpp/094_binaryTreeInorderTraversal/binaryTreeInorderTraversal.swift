@@ -76,15 +76,17 @@ class Solution2 {
         var node: TreeNode? = root
         while (node != nil || stack.count>0) {
             if let _ = node {
+                stack.append(node!)
                 while nil != node!.left {
-                    stack.append(node!)
                     stack.append(node!.left!)
                     node = node!.left
                 }
             } else {
                 node = stack[stack.count-1]
             }
-            stack.removeLast()
+            if stack.count > 0 {
+                stack.removeLast()
+            }
             ans.append(node!.val)
             node = node!.right
         }

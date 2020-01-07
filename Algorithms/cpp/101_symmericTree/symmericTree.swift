@@ -16,7 +16,7 @@ public class TreeNode {
 class Solution {
     func isSymmetric(_ root: TreeNode?) -> Bool {
         if root == nil {
-            return false
+            return true
         }
         return helper(root!.left, root!.right)
     }
@@ -24,7 +24,7 @@ class Solution {
     func helper(_ leftNode: TreeNode?, _ rightNode: TreeNode?) -> Bool {
         if let leftNode = leftNode, let rightNode = rightNode {
             if leftNode.val == rightNode.val {
-                if !helper(leftNode.left, rightNode.rightNode) {
+                if !helper(leftNode.left, rightNode.right) {
                     return false
                 }
                 if !helper(leftNode.right, rightNode.left) {

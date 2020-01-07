@@ -17,6 +17,7 @@
         "bitset": "cpp",
         "__locale": "cpp",
         "iterator": "cpp",
-        "__config": "cpp"
+        "__config": "cpp",
+        "set": "cpp"
     }
 }
