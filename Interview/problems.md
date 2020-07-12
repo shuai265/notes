@@ -2,20 +2,21 @@
 1. hook block
 hook block 来修改 block 的内部实现, 最终实现调用 block 时,运行自己的代码. 
 
-2. 列表性能优化
+2. 列表`性能优化
 ```
 一. cell 的复用
 1. 延迟 cell 数据设置时机, 为了提高效率我们应该把数据绑定的操作放在cell显示出来后再执行, 在tableView:willDisplayCell:forRowAtIndexPath:（以后简称 willDisplayCell）方法中绑定数据。
-willDisplayCell 在 cell 在tableview展示之前就会调用
+willDisplayCell 在 cell 在 tableView 展示之前就会调用
 2. 复用 cell
 二. cell 的渲染
 (1)当有图像时，预渲染图像，在bitmap context先将其画一遍，导出成UIImage对象，然后再绘制到屏幕，这会大大提高渲染速度。具体内容可以自行查找“利用预渲染加速显示iOS图像”相关资料
 (2)渲染最好时的操作之一就是混合(blending)了,所以我们不要使用透明背景，将cell的opaque值设为Yes，背景色不要使用clearColor，尽量不要使用阴影渐变等；
 (3)由于混合操作是使用GPU来执行，我们可以用CPU来渲染，这样混合操作就不再执行。可以在UIView的drawRect方法中自定义绘制；
-(4)减少subviews的个数和层级。子控件的层级越深，渲染到屏幕上所需要的计算量就越大；如多用drawRect绘制元素，替代用view显示；
-(5)少用subviews的透明图层。对于不透明的View，设置opaque为YES，这样在绘制该View时，就不需要考虑被View覆盖的其他内容(尽量设置Cell的view为opaque，避免GPU对Cell下面的内容也进行绘制)；
+(4)减少 subViews 的个数和层级。子控件的层级越深，渲染到屏幕上所需要的计算量就越大；如多用drawRect绘制元素，替代用view显示；
+(5)少用 subViews 的透明图层。对于不透明的View，设置opaque为YES，这样在绘制该View时，就不需要考虑被View覆盖的其他内容(尽量设置 Cell 的 view 为opaque，避免 GPU 对 Cell 下面的内容也进行绘制)；
 (6)避免CALayer特效（shadowPath）。 给Cell中View加阴影会引起性能问题，如下面代码会导致滚动时有明显的卡顿：
-
+(7)imageView 的显示：滑动的时候不加载，停止滑动才去加载
+`[self performSelector:@selector(download:) withObject:url afterDelay:0 inModes:NSDefaultRunLoopMode];`
 ```
 
 3. 动画暂停的实现
@@ -39,6 +40,12 @@ Quality of Service(QoS)
 - global, 通过参数设置 dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
 - user, 需要 dispatch_queue_attr_t 来设置
 ```
+
+** 如何动态修改 qos? 如何修改图片加载的优先级？
+a. gcd tableview停止滑动时，把图片加载放到 高优先级queue中，或者修改queue的优先级 dispatch_set_qos_class_floor
+b. NSURLSessionTask 对象有个 priority 属性，可以修改优先级
+c. NSOperation 有 QOS 属性
+
 
 6. iOS13 的适配
 ```
@@ -66,18 +73,66 @@ Quality of Service(QoS)
 
 
 9. iOS autolayout 是怎么实现的, 如果让你来做，你会怎么实现。使用过程中有哪些需要注意的地方
+```
+公式&要素 7个
+公式: view1.attr1 = view2.attr2 * multiplier + constant
+原理:
+组织: 最顶层的视图一定是有具体的坐标信息, 内部的子控件布局时读取对应的约束, 例如 距父视图上偏移100pt, 就会被转化为 frame.orginal.y = 100; 最终形成GPU可以读取的坐标信息, 并且, 在存在多个控件的情况下, 所有的约束会被分解成 链状+树状 进行组织, 根视图就是拥有具体坐标信息的最顶层父视图, 下面的同等级控件以及更下级控件的排列顺序, 应该是按照添加顺序从左至右组织, 形成树组织
+转化: 按照以上原理将所有的布局约束转化 树状节点组织, 读取的顺序类似于 BFS 的读取方式,先将横向的同级控件的约束转化为坐标点进行布局, 之后, 在布局深度的子叶节点.
+总论: 因为GPU在形成光栅化渲染的时候, 一定是要获取到每个坐标点的颜色值, 因此, 无论是设置控件的 frame 或者是 autolayout, 在渲染之前, 实际上都会被转化为具体的坐标点, 因此, autolayout 相对frame来讲, 在GPU阶段是一样的, 主要的区别在于同样的效果在代码阶段表现是不同的, autolayout 使用了较为贴近自然语言的方式去描述位置信息, 所以在最终阶段, 相对 frame就多了一个转化阶段, 就是将自然语言描述的位置信息转化为具体的坐标信息
 
+```
 
 10. 设计一个发朋友圈断网重试的上传逻辑,数据库怎么设计
 ```
-1. 网络中断时把数据写在本地数据库
+方案一
+1. 网络中断时把数据写在本地数据库，标记待上传
 2. 检测网络变化, 有网络时把数据上传到服务器
 
 -----
+方案二
 缓存所有网络请求
 ```
 
 11. ios 12 是怎么优化启动速度的
+```
+https://developer.apple.com/videos/play/wwdc2019/423/
+启动阶段： System Interface - Runtime Init - UIKit Init - Application Init - Initial Frame Render - Extended
+1. System Interface: 
+    系统优化：
+    - DYLD3:
+        - Dynamic Linker loads shared libraries and frameworks
+        - Introduces caching of runtime dependencies to improve warm launch (缓存 runtime 依赖，优化暖启动速度)
+    开发者优化：
+        - Avoid linking unused frameworks
+        - Avoid dynamic library loading during launch
+        - Hard link all your dependencies
+2. Runtime Init
+    do: Initializes the language runtime, Invokes all class static load methods
+    使用 +[Class initialize] 做懒加载初始化，代替 +[Class load]
+3. UIKit Init
+    do: Instantiates the UIApplication and UIApplicationDelegate
+    - Minimize work in UIApplication subclass
+    - Minimize work in UIApplicationDelegate initialization
+4. Application Init
+    application:willFinishLaunchingWithOptions: 
+    application:didFinishLaunchingWithOptions:
+    - Defer unrelated work（推迟 UI 不相关的操作）
+    - Share resources between scenes（多个scenes的情况，scenes之间共享资源）
+5. Initial Frame Render
+    Creates, performs layout for, and draws views
+    - loadView``
+    - viewDidLoad
+    - layoutSubviews
+    减少 view 层级，lazily load views
+    优化 auto layout 的使用
+6. Extended
+    利用 os_signpost api 统计时常数据
+    - 重启手机
+    - 打开飞行模式
+    - 使用没有 iCloud 账号
+    - 使用 release 包
+```
 
 
 12. 宏定义和static的区别, 两个m文件中有相同的定义能正常编译吗?
@@ -130,7 +185,14 @@ struct category_t {
 ```
 
 14. app 启动性能优化(抖音启动性能优化)
+检测耗时
 page
+1.main函数之前：
+page
+load 中代码换为 initialize 中
+2.main函数之后
+减少主线程操作
+懒加载
 
 15. urlsession 下载文件如何监控进度
 
@@ -187,6 +249,18 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 23. 如何获取加载图片的大小(物理尺寸)
 
 24. oc cpp 混编
+```
+1.编译设置
+a. 使用 cpp 后缀
+b. 使用 mm 后缀
+c. 设置 m 后缀的编译类型
+d. build settings 中 设置 compile source as Objective-C++
+2.调用
+oc 调用 cpp
+在 mm 文静中建立联系，调用 cpp
+cpp 调用 oc
+利用 c 函数做桥，将 oc 对象转为 void * 类型传入，在 c 函数中调用 oc。然后 cpp 中调用 c 函数。
+```
 
 25. 线程(Thread)和队列(Queue)的关系
 
@@ -195,6 +269,7 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 27. 触摸事件传递，如何让view响应frame外部的事件，A B两个view，是父子关系，如何让B响应A的触摸事件
 
 28. 有哪些设计模式
+单例，观察者，adapter
 
 29. swift 面向协议编程
 
@@ -216,6 +291,8 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 ```
 
 34. 除了 json 还知道其他数据格式吗? protolbuf 和 json 的区别是什么, 为什么性能好?
+json，yaml，protobuf
+protobuf 直接根据类的信息解析数据
 
 35. cocoapods 工作原理
 
@@ -231,23 +308,50 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 39. app 的生命周期
 
 40. 什么是 runtime
+动态库
 
 41. 什么是 runloop
+event loop
+
 
 42. KVO 底层是怎么实现的
 创建子类, 重写 setter, 调用 
 
 43. MRC copy 怎么写 setter
+```
+//assign环境下
+-(void)setName:(NSString *)name{
+
+    _name = name;
+}
+//retain环境下
+-(void)setName:(NSString *)name{
+    
+    if (_name != name) {
+        [_name release];
+        _name = [name retain];
+    }
+}
+//copy环境下
+-(void)setName:(NSString *)name{
+
+    if (_name != name) {
+        [_name release];
+        _name = [name copy];
+    }
+}
+```
+
 
 44. iOS 怎么做内存管理, ARC 是怎么实现的
 引用计数
 
 45. iOS 有哪些文件持久化的方法
 ```
-userDefault
+userDefault: [NSUserDefaults standardUserDefaults] set
 coreData
 sqlite
-archive
+archive/plist: 两种方式都是存储 plist，但是结构不一样
 ```
 
 46. property 的修饰词有哪些
@@ -277,7 +381,7 @@ malloc, 堆区,捕捉了外部变量,有block本身没有copy, ARC下会有几�
 4. 外部变量捕捉
 外部变量类型: global, static, 属性, 局部变量
 
-stack block, 不会对 aoto 类型的变量产生强引用
+stack block, 不会对 auto 类型的变量产生强引用
 malloc block, 会对根据 auto 变量的修饰符(__strong, __weak, __unsafe_unretain)做出相应的操作, 形成强引用或者弱引用
 
 5. hook block
@@ -461,7 +565,7 @@ GCD, NSThread, NSOperation
 recourse
 
 非递归
-while
+while + stack
 ```
 
 81. 怎么实现LRU
@@ -494,6 +598,7 @@ Base64
 ```
 
 90. copy 和 strong 的区别
+
 
 91. weak 如何实现自动赋 nil
 ```
@@ -553,9 +658,23 @@ RAC: Reactive Cocoa
 ```
 
 108. 编译链接你有了解多少
+[Objective-C源文件编译过程](https://www.jianshu.com/p/94c2a7a311d4)
+编译
+step1: 预处理
+step2: 编译： 词法分析-语法分析-语义分析-生成中间代码 ir（ll，memory，bitcode格式）
+step3: 优化 IR
+链接
+链接器把编译产生的.o文件和（dylib,a,tbd）文件，生成一个mach-o文件。
 
 
 109. 简单介绍下KVO的用法
+原理：创建子类重载 setter
+```
+-[obj addObserver:forKeyPath:options:context:]
+
+- observeValueForKeyPath:ofObject:change:context:
+```
+
 
 
 110. 你认为自动布局怎么实现的
@@ -691,6 +810,7 @@ target、selector、arguments、return value，
 - NSInvocation 对象设置 arguments
 - 调用 invoke 来调用目标方法
 ```
+
 120. 代码规范
 
 121. weak 底层是如何实现线程安全的
@@ -854,6 +974,68 @@ TCP 拥塞控制不精准
 139. 图片三级缓存
 安卓上的概念: RAM,ROM,HTTP
 
+140. Block是对象吗？ weak 为什么能解决循环引用的问题？block在调用前为什么要判空?
+block 是对象，继承于 NSBlock
+weak 生成弱引用，不增加引用计数
+block 调用不是通过消息，而是直接通过地址偏移取函数地址，nil时会出现野指针，导致crash
+
+141. 视频的m3u8是什么
+
+142. app中包含autoreleasepool的个数？1个？2个？有限个？还是无限个？
+
+
+143. kvo和kvc的使用。iVar和property的区别
+```
+property = ivar + getter + setter
+kvc: 
+应用场景: 字典转对象，访问私有变量（iOS13开始禁止）
+- `setValue:forKey:` 
+调用链: setter - _propertyName - propertyName - 调用 setValue:forUndefinedKey:(默认实现是抛NSUnknownKeyException异常)
+- `valueForKey:`
+调用链: getter - _name - name - 调用 valueForKey(默认实现是抛出NSUnknownKeyException)
+```
+
+144. CoreText原理
+
+145. iOS实现图文混排
+
+146. 远程推送原理理解
+
+147. MVP
+
+148. 输入是两个UIView，输出这两个View的最近的共同superView
+- （UIView *)findCommonSuperView:(UIView *)view otherView:(UIView *)otherView {
+    NSMutableSet *superViews = [NSMutableSet new];
+    UIView *v = view;
+    while(v.superView) {
+        [superViews addObject:v];
+        v = v.superView;
+    }
+    v = otherView;
+    while(v.superView) {
+        if([superViews contains:v]) {
+            return v;
+        }   
+        v = v.superView;     
+    }
+    return nil;
+}
+
+149. 操作系统的内存管理方式和调度方式,GCD会对应到操作系统里的哪个东西,
+
+
+150. GET跟POST的区别,数据链路层和网络层的作用是什么
+
+
+151. iOS 如何把 UI 组建渲染到屏幕
+
+
+152. method_swizzling 真实的应用场景
+
+153. student 继承自 person，student 类中 [self class] 和 [super class] 的结果是什么？为什么？
+都是 student，
+[self class] 会编译成 msgSend() 函数，第一个参数为self，selector(class) 默认实现为 object_getClass(self)
+[super class] 会编译成 msgSendSuper() 函数，第一个参数仍为 self，即 student 的实例对象，msgSendSuper 会去 person 中查找 sel，没有找到会去 super 找，知道 NSObject 的默认实现，object_getClass(self) 函数获取到的为 student
 
 
 
@@ -867,6 +1049,17 @@ TCP 拥塞控制不精准
 3. 数据库读写安全如何保证
 
 4. 写入一万条数据,如何优化
+```
+1.合并 sql 语句，一次插入多条（一条sql语句长度有限制，为了防止超过限制，需要控制合并的条数）
+2.多条 sql 放到同一个事务中，（事务需要控制大小）
+    - 减少 sql 解析、开始、结束带来的不必要的消耗，
+    - insert 操作在 MySQL 内部会建立一个事务，事务内指向真正的插入操作，通过事务可以减少创建事务的消耗
+3.优化：主键按顺序会加快写入速度，无序的记录会增加索引的成本
+
+https://blog.csdn.net/qq_22855325/article/details/76087138
+https://blog.csdn.net/SoulOfAndroid/article/details/42061223
+```
+
 
 
 ## 3.算法
@@ -940,4 +1133,6 @@ RLE算法，编写一个函数，实现统计字符次数的功能：例如输�
 30. [https运行原理解析笔记](https://coolcao.com/2018/08/06/https/)
 31. [史上最详细的iOS之事件的传递和响应机制-原理篇](https://www.jianshu.com/p/2e074db792ba)
 32. [iOS图像最佳实践总结](https://juejin.im/post/5c84bd676fb9a049e702ecd8#heading-10)
-
+33. [iOS底层原理总结 - 探寻OC对象的本质](https://juejin.im/post/5ac81c75518825556534c0af)
+34. [优化SQLite3数据库插入10000条数据](https://blog.csdn.net/SoulOfAndroid/article/details/42061223)
+35. [数据库大批量SQL插入性能优化](https://blog.csdn.net/qq_22855325/article/details/76087138)

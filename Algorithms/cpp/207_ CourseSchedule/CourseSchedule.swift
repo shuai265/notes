@@ -36,13 +36,6 @@ class Solution {
                 if !helper(course, courseMap, &courseSet, &scanedCourseSet) {
                     return false
                 }
-                // if courseSet.contains(course) {
-                //     return false
-                // } else {
-                //     if !helper(course, courseMap, &courseSet, &scanedCourseSet) {
-                //         return false
-                //     }
-                // }
             }
         }
         scanedCourseSet.insert(targetCurses)
