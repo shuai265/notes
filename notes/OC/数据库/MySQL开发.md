@@ -69,3 +69,17 @@ run 编译好的 sql 语句
 - sqlite3_reset()
 
 重置语句
+
+- sqlite3_errmsg()
+
+错误信息
+
+- sqlite3_step（）
+
+- sqlite3_column_int()
+- sqlite3_column_text()
+
+### 常量
+SQLITE_ROW 
+表明当处理结果时，每次取到的数据是一行
+
