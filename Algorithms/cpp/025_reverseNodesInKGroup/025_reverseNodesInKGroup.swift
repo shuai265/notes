@@ -31,17 +31,24 @@ class Solution {
         var pre: ListNode? = fake
         pre?.next = head
         var node = head
-        while node != nil {
-            print("new round")
-            
-            let nextNode = reverseKNodes(pre, node, k)
-            print("round end")
-            
+        while (node != nil && nodeCount(node)>=k ) {
+            let nextNode = reverseKNodes(pre, node, k)            
             pre = node
             node = nextNode
-            print("current nodeList: \(nodeStr(fake.next))")
+            pre?.next = nextNode
+            // print("current nodeList: \(nodeStr(fake.next))")
         }
         return fake.next
+    }
+
+    func nodeCount(_ head: ListNode?) -> Int {
+        var cnt = 0
+        var node = head 
+        while node != nil {
+            cnt += 1
+            node = node?.next
+        }
+        return cnt
     }
     
     func reverseKNodes(_ pre: ListNode?, _ head: ListNode?, _ k: Int) -> ListNode? {
@@ -51,9 +58,7 @@ class Solution {
         // var nextNextNode: ListNode? = nil
         var count = 1
         while (nextNode != nil && count < k) {
-            count += 1
-            print("count = \(count)")
-            
+            count += 1            
             let tmp = nextNode?.next
             nextNode!.next = node
             node = nextNode
@@ -88,8 +93,9 @@ func genNode(_ nums:[Int]) -> ListNode? {
     return pre.next
 }
 
+let nums = [1,2,3,4,5]
 // let nums = [1,2,3,4,5,6]
-let nums = [1,2,3,4,5,6,7]
+// let nums = [1,2,3,4,5,6,7]
 // let k = 1
 // let k = 2
 let k = 3
