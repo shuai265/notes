@@ -1,5 +1,12 @@
 # 指针种类
 `Unsafe[Mutable][Raw][Buffer]Pinter`
+```
+unsafe：不安全的，并不是真的不安全，大概是提示开发者少用。
+Write Access：可写入。
+Collection：像一个容器，可添加数据。
+Strideable：指针可使用 advanced 函数移动。
+Typed：是否需要指定类型（范型）。
+```
 
 UnsafePointer, UnsafeMutablePointer, OpaquePointer
 
