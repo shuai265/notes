@@ -19,8 +19,27 @@
 *               
 **********************************************************************************/
 
+
 class Solution {
     func removeDuplicates(_ nums: inout [Int]) -> Int {
-        
+        var pre = Int.max
+        var i = nums.count-1
+        while i >= 0 {
+            if nums[i] == pre {
+                nums.remove(at: i)
+            } else {
+                pre = nums[i]
+            }
+            i -= 1
+        }
+        return nums.count
     }
 }
+
+//  var nums = [1,2,3,4,4,5,5]
+//  var nums = [1,2,3,4,4,5]
+var nums = [1,2,3,4,4,5,6]
+print("before \(nums), length = \(nums.count)")
+
+let newLen = Solution().removeDuplicates(&nums)
+print("after \(nums), length = \(newLen)")
