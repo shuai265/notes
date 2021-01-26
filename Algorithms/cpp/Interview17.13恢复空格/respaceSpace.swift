@@ -20,6 +20,8 @@ dictionary中总字符数不超过 150000。
 
 
 
+
+
 class Solution {
     func respace(_ dictionary: [String], _ sentence: String) -> Int {
         helper(dictionary, sentence, 0)
