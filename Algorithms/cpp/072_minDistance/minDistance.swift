@@ -35,20 +35,27 @@ word1 和 word2 由小写英文字母组成
 class Solution {
     func minDistance(_ word1: String, _ word2: String) -> Int {
         // TODO:: 存储结果
-        var resMap = [String: Int]() // i_j: min
+        var cacheMap = [String: Int]() // i_j: min
         // var ans = max(word1.count, word2.count)
-        let ans = helper(word1, word2, 0, 0, 0, &resMap)
+        let ans = helper(word1, word2, 0, 0, 0, &cacheMap)
         return ans
     }
 
-    func helper(_ word1: String, _ word2: String, _ s1: Int, _ s2: Int, _ preCount: Int, _ resMap: inout [String: Int]) -> Int {
-        if word1.count == 0 || word2.count == 0 {
+    func helper(_ word1: String, 
+                _ word2: String, 
+                _ s1: Int, 
+                _ s2: Int, 
+                _ preCount: Int, 
+                _ cacheMap: inout [String: Int]) -> Int 
+    {
+        if word1.count == 0 || word2.count == 0 || s1>=word1.count || s2>=word2.count {
             return max(word1.count, word2.count)
         }
+        print("start with s1 = \(s1), s2 = \(s2)")
+        
         var minStep = preCount + max(word1.count-s1, word2.count-s2)
         
         // let currentKey = "\(s1)_\(s2)"
-
         for i in s1..<word1.count {
             let idx1 = word1.index(word1.startIndex, offsetBy: i)
             let char1 = word1[idx1]
@@ -64,10 +71,12 @@ class Solution {
                     let newPreCnt = preCount + max(i-s1, j-s2)
                     var min = newPreCnt
                     let nextKey = "\(i+1)_\(j+1)"
-                    if resMap.keys.contains(nextKey) {
-                        min += resMap[nextKey]!
+                    if cacheMap.keys.contains(nextKey) {
+                        print("read cache")
+                        
+                        min += cacheMap[nextKey]!
                     } else {
-                        min += helper(word1, word2, newPreCnt, i+1, j+1, &resMap)
+                        min += helper(word1, word2, newPreCnt, i+1, j+1, &cacheMap)
                     }
                     if minStep > min {
                         minStep = min
@@ -75,7 +84,7 @@ class Solution {
                 }
             }
         }
-        resMap["\(s1)_\(s2)"] = minStep
+        cacheMap["\(s1)_\(s2)"] = minStep
         return minStep
     }
 }
@@ -83,14 +92,14 @@ class Solution {
 // let w1 = "intention"
 // let w2 = "execution"
 
-let w1 = "horse"
-let w2 = "ros"
+// let w1 = "horse"
+// let w2 = "ros"
 
 // let w1 = "a"
 // let w2 = "b"
 
-// let w1 = "pneumonoultramicroscopicsilicovolcanoconiosis"
-// let w2 = "ultramicroscopically"
+let w1 = "pneumonoultramicroscopicsilicovolcanoconiosis"
+let w2 = "ultramicroscopically"
 
 let ans = Solution().minDistance(w1, w2)
 print("ans = \(ans)")
