@@ -8,24 +8,42 @@
 */
 
 
+import Foundation
 
 class Solution {
     func simplifyPath(_ path: String) -> String {
         var stack: [String] = []
-        // 
-        var sub = ""
-        if (sub == "/.") {
-            continue
-        } else if (sub == "/..") {
-            if stack.count > 0 {
-                stack.removeLast()
-            } else {
-                // in root path, do nothing
-            }
-        } else {
-            stack.append(sub)
-        }
 
-        
+        let components = path.components(separatedBy: "/")
+        // var components = split(path) {$0 == "/"}
+
+        for i in 0..<components.count {
+            // 
+            let sub = components[i]
+            if (sub == "." || sub.count == 0) {
+                continue
+            } else if (sub == "..") {
+                if stack.count > 0 {
+                    stack.removeLast()
+                } else {
+                    // in root path, do nothing
+                    continue
+                }
+            } else {
+                stack.append(sub)
+            }
+        }
+        var res = "/"
+        res += stack.joined(separator: "/")
+        return res
     }
 }
+
+// let originPath = "/home//foo/"
+// let originPath = "/../"
+// let originPath = "/a/./b/../../c/"
+// let originPath = "/a/../../b/../c//.//"
+let originPath = "/a//b////c/d//././/.."
+
+let newPath = Solution().simplifyPath(originPath)
+print("newPath = \(newPath)")
