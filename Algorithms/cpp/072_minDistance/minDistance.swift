@@ -46,6 +46,7 @@ class Solution {
                     _ s2: Int, 
                     _ cacheMap: inout [String: Int]) -> Int 
     {
+        // print("start with s1:\(s1), s2:\(s2)")
         var minStep = max(word1.count-s1, word2.count-s2)
 
         if word1.count == 0 || word2.count == 0 || s1>=word1.count || s2>=word2.count {
@@ -53,8 +54,15 @@ class Solution {
         }
         
         for i in s1..<word1.count {
+            if i-s1 > minStep {
+                break
+            }
             let char1 = word1[word1.index(word1.startIndex, offsetBy: i)]
             for j in s2..<word2.count {
+                if j-s2 > minStep {
+                    break
+                }
+
                 let char2 = word2[word2.index(word2.startIndex, offsetBy: j)]
                 if char1 == char2 {
                     var min = max(i-s1, j-s2)
