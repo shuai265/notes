@@ -26,5 +26,8 @@
         "request": "launch",
         "program": "${workspaceFolder}/<my program>",
         "args": ["-arg1", "-arg2"],
-    }
+    },
+
+    "sourcekit-lsp.serverPath": "absolute path to the sourcekit-lsp executable",
+    "sde.languageServerMode": "sourcekit-lsp",
 }

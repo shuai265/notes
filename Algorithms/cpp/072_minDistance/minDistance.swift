@@ -32,6 +32,8 @@ word1 和 word2 由小写英文字母组成
  */
 
 
+// 方法一：递归
+
 class Solution {
     func minDistance(_ word1: String, _ word2: String) -> Int {
         var cacheMap = [String: Int]() // i_j: min
@@ -80,6 +82,12 @@ class Solution {
         }
         cacheMap["\(s1)_\(s2)"] = minStep
         return minStep
+    }
+}
+
+// 方法二： 动态规划
+class Solution {
+    func minDistance(_ word1: String, _ word2: String) -> Int {
     }
 }
 
