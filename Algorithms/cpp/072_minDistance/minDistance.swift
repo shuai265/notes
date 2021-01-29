@@ -34,49 +34,35 @@ word1 和 word2 由小写英文字母组成
 
 class Solution {
     func minDistance(_ word1: String, _ word2: String) -> Int {
-        // TODO:: 存储结果
         var cacheMap = [String: Int]() // i_j: min
-        // var ans = max(word1.count, word2.count)
-        let ans = helper(word1, word2, 0, 0, 0, &cacheMap)
-        return ans
+        let min = helper(word1, word2, 0, 0, &cacheMap)
+        // print("cacheMap = \(cacheMap)")
+        return min
     }
 
     func helper(_ word1: String, 
-                _ word2: String, 
-                _ s1: Int, 
-                _ s2: Int, 
-                _ preCount: Int, 
-                _ cacheMap: inout [String: Int]) -> Int 
+                    _ word2: String, 
+                    _ s1: Int, 
+                    _ s2: Int, 
+                    _ cacheMap: inout [String: Int]) -> Int 
     {
-        if word1.count == 0 || word2.count == 0 || s1>=word1.count || s2>=word2.count {
-            return max(word1.count, word2.count)
-        }
-        print("start with s1 = \(s1), s2 = \(s2)")
-        
-        var minStep = preCount + max(word1.count-s1, word2.count-s2)
-        
-        // let currentKey = "\(s1)_\(s2)"
-        for i in s1..<word1.count {
-            let idx1 = word1.index(word1.startIndex, offsetBy: i)
-            let char1 = word1[idx1]
+        var minStep = max(word1.count-s1, word2.count-s2)
 
+        if word1.count == 0 || word2.count == 0 || s1>=word1.count || s2>=word2.count {
+            return minStep
+        }
+        
+        for i in s1..<word1.count {
+            let char1 = word1[word1.index(word1.startIndex, offsetBy: i)]
             for j in s2..<word2.count {
                 let char2 = word2[word2.index(word2.startIndex, offsetBy: j)]
-
                 if char1 == char2 {
-                    // let nWord1 = word1.suffix(from: word1.index(word1.startIndex, offsetBy: i+1))
-                    // let nWord2 = word2.suffix(from: word2.index(word2.startIndex, offsetBy: j+1))
-                    // print("nWord1 = \(nWord1), nWord2 = \(nWord2)")
-                    // let min = max(i, j) + minDistance(String(nWord1), String(nWord2))
-                    let newPreCnt = preCount + max(i-s1, j-s2)
-                    var min = newPreCnt
+                    var min = max(i-s1, j-s2)
                     let nextKey = "\(i+1)_\(j+1)"
                     if cacheMap.keys.contains(nextKey) {
-                        print("read cache")
-                        
                         min += cacheMap[nextKey]!
                     } else {
-                        min += helper(word1, word2, newPreCnt, i+1, j+1, &cacheMap)
+                        min += helper(word1, word2, i+1, j+1, &cacheMap)
                     }
                     if minStep > min {
                         minStep = min
@@ -98,8 +84,11 @@ class Solution {
 // let w1 = "a"
 // let w2 = "b"
 
-let w1 = "pneumonoultramicroscopicsilicovolcanoconiosis"
-let w2 = "ultramicroscopically"
+// let w1 = "pneumonoultramicroscopicsilicovolcanoconiosis"
+// let w2 = "ultramicroscopically"
+
+let w1 = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef"
+let w2 = "bcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg"
 
 let ans = Solution().minDistance(w1, w2)
 print("ans = \(ans)")
