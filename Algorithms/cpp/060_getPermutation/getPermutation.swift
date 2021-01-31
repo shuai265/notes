@@ -114,48 +114,43 @@ class Solution {
         }
         var left = k
         while nums.count > 0 {
-            ans = ans * 10 + pGet(&nums, &left)
+            ans = ans * 10 + p2(&nums, &left)
         }
         return String(ans)
     }
 
-    // k > 0
-    func pGet(_ nums: inout [Int], _ k: inout Int) -> Int {
-        print("nums = \(nums), k = \(k)")
-        var index = 0
-        let page = helper(nums.count - 1)
-        if page == 1 { // [1,2]
-            index = k - page
-            k -= 1
+    func p2(_ nums: inout [Int], _ k: inout Int) -> Int {
+        let page = helper(nums.count-1) // TODO:: 优化，存到数组中
+        if k == 0 {
+            // 逆序
+            let t = nums.last!
+            nums.removeLast()
+            return t
+        } else if k < page {
+            let t = nums[0]
+            nums.remove(at: 0)
+            return t
         } else {
-            if k < page { // 在第一组内
-                index = 0
+            // let page = helper(nums.count-1)
+            var idx = k / page // 0, 1 ~ cnt-1
+            let m = k % page
+            if page == 1 {
+                // 2, 1
                 k -= 1
-            } else if k > page { 
-                index = k / page
-                k = k - index * page 
-                // k = k % page
-            } else { // k == page, k 不变，传递给后面
-
+                idx = k
+            } else if m == 0 {
+                idx -= 1
+                k = 0
+            } else {
+                k = m
             }
+            let t = nums[idx]
+            nums.remove(at: idx)
+            return t
         }
-        // } else if k == page {
-        //     k = 1
-        // } else {
-        //     k -= 1
-        // }
-        let target = nums[index]
-        nums.remove(at: index)
-        // k -= index * helper(nums.count)
-        print("index = \(index), target = \(target) \n")
-        
-        return target
     }
     
     func helper(_ n: Int) -> Int {
-        // if n == 0 {
-        //     return 0
-        // }
         var t = n
         var ans = 1
         while t > 1 {
@@ -166,18 +161,22 @@ class Solution {
     }
 }
 
-// let n = 4
-// let k = 9 // "2314"
+let n = 4
+let k = 9 // "2314"
 // let n = 3
-// let k = 3
+// let k = 3 //213
+
 // let n = 3
-// let k = 1
+// let k = 1 // 123
 
 // let n = 2
-// let k = 2
+// let k = 2 // 21
 
-let n = 3
-let k = 2
+// let n = 3
+// let k = 2 // 132
+
+// let n = 3
+// let k = 4 // "231"
 
 let ans = Solution().getPermutation(n, k)
 print("ans = \(ans)")
