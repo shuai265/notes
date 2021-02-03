@@ -30,4 +30,7 @@
 
     "sourcekit-lsp.serverPath": "absolute path to the sourcekit-lsp executable",
     "sde.languageServerMode": "sourcekit-lsp",
+    "workbench.preferredLightColorTheme": "Visual Studio Light",
+    "workbench.colorTheme": "Visual Studio Dark",
+    "terminal.explorerKind": "external",
 }

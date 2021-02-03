@@ -241,6 +241,7 @@ class Solution2 {
         }
 
         var ans = [Int]()
+        var analysizeNums = [Int]()
 
         for i in 0..<wordLength {
             var left = i // left jump by wordLength
@@ -248,6 +249,8 @@ class Solution2 {
             var cntMap = wordCountMap
             
             for j in stride(from: i, through:s.count - wordLength, by: wordLength) {
+                analysizeNums.append(j)
+
                 right = j
                 let word = s[right..<right+wordLength]
                 if cntMap.keys.contains(word) && cntMap[word]! > 0 {
@@ -291,6 +294,7 @@ class Solution2 {
                 }
             }
         }
+        print("xxxx analysize cnt = \(analysizeNums.count)")
         return ans
     }
 }
