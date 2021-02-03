@@ -231,40 +231,63 @@ class Solution2 {
         timestamp.printTimestamp() // 2018-07-05 12:57:08.725
 
         let wordSet = Set<String>(words)
+        var wordCountMap = Dictionary<String, Int>()
+        for word in words {
+            if wordCountMap.keys.contains(word) {
+                wordCountMap[word] = wordCountMap[word]! + 1
+            } else {
+                wordCountMap[word] = 1
+            }
+        }
 
         var ans = [Int]()
 
         for i in 0..<wordLength {
             var left = i // left jump by wordLength
             var right = left
-            var unfoundWords = [String](words)
-
+            var cntMap = wordCountMap
+            
             for j in stride(from: i, through:s.count - wordLength, by: wordLength) {
                 right = j
                 let word = s[right..<right+wordLength]
-                if unfoundWords.contains(word) {
+                if cntMap.keys.contains(word) && cntMap[word]! > 0 {
                     // move word from unfound to found
-                    let idx = unfoundWords.firstIndex(of: word)!
-                    unfoundWords.remove(at: idx)
-                    if unfoundWords.count == 0 {
-                        // finish one, record result
-                        // move left = left + wordLength, reset unfound & found data
-                        ans.append(left)
-                        let firstWord = s[left..<left+wordLength]
-                        unfoundWords.append(firstWord)
-                        left += wordLength // 偏移到下一个
+                    let newCnt = cntMap[word]! - 0
+                    if newCnt == 0 {
+                        // cntMap[word]! = nil
+                        cntMap.removeValue(forKey: word)
+                        if cntMap.keys.count == 0 {
+                            // finish one, record result
+                            // move left = left + wordLength, reset unfound & found data
+                            ans.append(left)
+                            let firstWord = s[left..<left+wordLength]
+                            // unfoundWords.append(firstWord)
+                            cntMap[firstWord] = 1
+                            left += wordLength // 偏移到下一个
+                        } else {
+                            // continue
+                        }
                     } else {
-                        // continue
+                        cntMap[word]! = newCnt
                     }
                 } else if wordSet.contains(word) { 
                     // 重复出现，把 left 移动到 word idx + 1 位置，清理 foundWords -> unfound
-                    repeat {
+                    while true {
                         left += wordLength
-                    } while s[left-wordLength..<left] != word
+                        let w = s[left-wordLength..<left]
+                        if cntMap.keys.contains(word) {
+                            cntMap[word] = cntMap[word]! + 1
+                        } else {
+                            cntMap[word] = 1
+                        }
+                        if w == word {
+                            break
+                        }
+                    }
                 } else {
                     // 未找到单词，把 left 移动到 j+1, 同时 清理 foundWords -> unfound
                     left = j + wordLength // 偏移到下一个单词开始
-                    unfoundWords = [String](words)
+                    var cntMap = wordCountMap
                 }
             }
         }
