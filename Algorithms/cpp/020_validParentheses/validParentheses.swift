@@ -9,6 +9,30 @@
 *               
 **********************************************************************************/
 
+class Solution2 {
+    func isValid(_ s: String) -> Bool {
+        var stack = [Character]()
+        for char in s {
+            if char == Character("(") || char == Character("[") || char == Character("{") {
+                stack.append(char)
+            } else {
+                if stack.count == 0 {
+                    stack.append(char)
+                } else if stack.last == Character("(") && char == ")" {
+                    stack.removeLast()
+                } else if stack.last == Character("[") && char == "]" {
+                    stack.removeLast()
+                } else if stack.last == Character("{") && char == "}" {
+                    stack.removeLast()
+                } else {
+                    stack.append(char)
+                }
+            }
+        }
+        return stack.count == 0
+    }
+}
+
 class Solution {
     func isValid(_ s: String) -> Bool {
         if s.count == 0 {
@@ -44,10 +68,17 @@ class Solution {
 }
 
 // let input = "()[]{}"
-let input = "(]"
+// let input = "(]"
+let input = "([)]"
 
-if Solution().isValid(input) {
-    print("true")
-} else {
-    print("false")
-}
+// if Solution().isValid(input) {
+//     print("true")
+// } else {
+//     print("false")
+// }
+
+var ans1 = Solution().isValid(input)
+print("ans1 = \(ans1)")
+
+var ans2 = Solution2().isValid(input)
+print("ans2 = \(ans2)")
