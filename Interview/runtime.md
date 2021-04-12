@@ -41,6 +41,8 @@ ans：Man
 method-swizzling
 其他组件的反射调用
 数据打点使用消息转发统一处理
+类名创建对线
+category绑定对象
 
 5. NSInvocation 和 preformSelector 区别
 ```

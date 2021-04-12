@@ -235,9 +235,12 @@ dispatch_once主要是根据onceToken的值来决定怎么去执行代码。
 
 
 21. 如何 KVO multableArray 的 count 
-* count 为 readonly, 不能被子类重载 setter, 所以无法 kvo ？？存疑
+* 
+* 由于 Foundation 禁止，无法 KVO,与 `count 为 readonly, 不能被子类重载 setter` 无关
+* NSArray 对象调用 KVO 相关方法，都会出发 exception crash，系统禁止调用
+* 
 
-22. kvo 的实现原理
+1.  kvo 的实现原理
 ```
 1. 当一个obj有观察者时, 会动态创建 obj 的类的子类
 2. 在子类中重载被观察的 property, 重写起 setter 方法
@@ -269,7 +272,7 @@ cpp 调用 oc
 27. 触摸事件传递，如何让view响应frame外部的事件，A B两个view，是父子关系，如何让B响应A的触摸事件
 
 28. 有哪些设计模式
-单例，观察者，adapter
+单例，观察者，adapter，strategy
 
 29. swift 面向协议编程
 
@@ -385,6 +388,7 @@ stack block, 不会对 auto 类型的变量产生强引用
 malloc block, 会对根据 auto 变量的修饰符(__strong, __weak, __unsafe_unretain)做出相应的操作, 形成强引用或者弱引用
 
 5. hook block
+block->invoke
 
 6. block 编译后会生成一个函数,把`内部捕捉的变量`作为参数传递给函数
 7. __block 修饰符会把修饰的对象封装成一个对象,解决block内部无法修改auto变量值的问题
@@ -627,6 +631,7 @@ install: 直接按照 podfile.lock 文件中的版本安装库
 98. 可变数据的实现原理
 
 99. 如何 hook 一个对象方法, 而不影响其他对象
+    isa_swizzling
 
 100. 如何避免 if...else
 
@@ -637,27 +642,27 @@ install: 直接按照 podfile.lock 文件中的版本安装库
 103. 数组copy后里面的元素会复制一份新的吗
 不会, 浅拷贝只会指针copy, 深拷贝也只是不完全深拷贝
 
-104. 数组的浅拷贝与深拷贝
+1.   数组的浅拷贝与深拷贝
 immutable -> immutable 是浅拷贝
 深拷贝
 immutable -> mutable
 mutable -> immutable
 mutable -> mutable
 
-105. TCP为什么是三次握手和四次挥手
+1.   TCP为什么是三次握手和四次挥手
 
-106. 你平时怎么解决网络请求的依赖关系：当一个接口的请求需要依赖于另一个网络请求的结果
+2.   你平时怎么解决网络请求的依赖关系：当一个接口的请求需要依赖于另一个网络请求的结果
 办法2：逻辑：在上一个网络请求的响应回调中进行下一网络请求的激活
 办法3：信号量
 办法4：group, block enter, 
 
-107. 关于RAC你有怎样运用到解决不同API依赖关系
+1.   关于RAC你有怎样运用到解决不同API依赖关系
 ```
 RAC: Reactive Cocoa
 信号的依赖：使用场景是当信号A执行完才会执行信号B,和请求的依赖很类似,例如请求A请求完毕才执行请求B,我们需要注意信号A必须要执行发送完成信号,否则信号B无法执行
 ```
 
-108. 编译链接你有了解多少
+1.   编译链接你有了解多少
 [Objective-C源文件编译过程](https://www.jianshu.com/p/94c2a7a311d4)
 编译
 step1: 预处理
@@ -667,7 +672,7 @@ step3: 优化 IR
 链接器把编译产生的.o文件和（dylib,a,tbd）文件，生成一个mach-o文件。
 
 
-109. 简单介绍下KVO的用法
+1.   简单介绍下KVO的用法
 原理：创建子类重载 setter
 ```
 -[obj addObserver:forKeyPath:options:context:]
@@ -677,14 +682,14 @@ step3: 优化 IR
 
 
 
-110. 你认为自动布局怎么实现的
+1.   你认为自动布局怎么实现的
 解析：先提到系统提供的 NSLayoutConstraint，再介绍 Masonry怎样基于它的封装？
 
 然而面试官继续问AutoLayout原理是？它的原理就是一个线性公式！比如，创建约束，iOS6中新加入了一个类：NSLayoutConstraint。它的约束满足这个公式：
 
-111. 快排的思想？怎么实现（说思路）？复杂度是多少？归并呢？
+1.   快排的思想？怎么实现（说思路）？复杂度是多少？归并呢？
 
-112. 知道runtime吗？介绍一下runtime怎么工作的？还能做些什么？
+2.   知道runtime吗？介绍一下runtime怎么工作的？还能做些什么？
 ```
 1. iOS runtime 是一个 runtime library,提供了oc动态性的能力
 2. 作用
