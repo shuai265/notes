@@ -31,7 +31,7 @@ class MagicDictionary {
         // }
         for key in mDict.keys {
             if key == searchWord {
-                continue
+                break
             }
             var found = false
             for tword in searchWords {
