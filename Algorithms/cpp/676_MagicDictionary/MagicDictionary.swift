@@ -4,7 +4,8 @@
 
 class MagicDictionary {
     var words = [String]()
-    var mDict = [String:Set<String>]()
+    // var mDict = [String:Set<String>]()
+    var mDict = [String:[String]]()
     /** Initialize your data structure here. */
     init() {
         
@@ -21,22 +22,16 @@ class MagicDictionary {
     
     func search(_ searchWord: String) -> Bool {
         let searchWords = getSubwords(searchWord) 
-        // for tword in searchWords {
-        //     for key in mDict.keys {
-        //         let wordSet = mDict[key]!
-        //         if key != searchWord && wordSet.contains(tword) {
-        //             return true
-        //         }
-        //     }
-        // }
         for key in mDict.keys {
-            if key == searchWord {
-                break
+                        if key == searchWord || key.count != searchWord.count {
+                continue
             }
             var found = false
-            for tword in searchWords {
-                let wordSet = mDict[key]!
-                if wordSet.contains(tword) {
+            let mWords = mDict[key]!
+            for i in 0..<key.count {
+                let tWord = searchWords[i]
+                let mWord = mWords[i]
+                if tWord == mWord {
                     if found {
                         found = false
                         break
@@ -51,12 +46,12 @@ class MagicDictionary {
         return false
     }
 
-    func getSubwords(_ word: String) -> Set<String> {
-        var subwords = Set<String>()
+    func getSubwords(_ word: String) -> [String] {
+        var subwords = [String]()
         for i in 0..<word.count {
             var subword = word 
             subword.remove(at: subword.index(subword.startIndex, offsetBy: i))
-            subwords.insert(subword)
+            subwords.append(subword)
         }
         return subwords
     }
