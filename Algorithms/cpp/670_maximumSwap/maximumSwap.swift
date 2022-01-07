@@ -44,3 +44,42 @@ let num = 9973435
 
 let ans = Solution().maximumSwap(num)
 print("ans = \(ans)")
+
+class Solution2 {
+    func maximumSwap(_ num: Int) -> Int {
+        if num < 10 {
+            return num
+        }
+
+        var nums:[Int] = []
+        var n = num
+        while n > 0 {
+            let m = n%10
+            nums.insert(m, at: 0)
+            n = n/10
+        }
+        var ans = num
+        var swapped = false
+        for i in 0..<nums.count-1 {
+            let ni = nums[i]
+            for j in i..<nums.count {
+                if nums[j] > ni {
+                    let tmp = numSwap(num, i, j)
+                    var a 
+                    if tmp > ans {
+                        ans = num
+                        swapped = true
+                    }
+                }
+            }
+            if swapped {
+                break
+            }
+        }
+        return ans
+    }
+
+    func numSwap(_ num: Int, _ i: Int, _ j: Int) -> Int {
+        return 1
+    }
+}
