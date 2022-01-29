@@ -13,6 +13,51 @@
 
 import Foundation
 
+class Solution {
+    func lengthOfLongestSubstring(_ s: String) -> Int {
+        if s.count == 0 {
+            return 0
+        }
+        
+        var maxLength = 0
+        var length = 0
+        var left = 0
+        var right = 0
+        var charSet = Set<Character>()
+        let characters = Array(s)
+
+        while right < characters.count {
+            length += 1
+            let char = characters[right]
+            if charSet.contains(char) {
+                // print("enter contains, charSet = \(charSet), char = \(char)")
+                while left < right {
+                    let leftChar = characters[left]
+                    // print("enter move left, charSet = \(charSet), leftChar = \(leftChar)")
+                    // left 右移
+                    left += 1
+                    length -= 1
+                    if leftChar == char {
+                        break
+                    } else {
+                        charSet.remove(leftChar)
+                    }
+                }
+            } else {
+                // print("enter new, charSet = \(charSet), char = \(char), originLengt = \(length)")
+                charSet.insert(char)
+                // print("new length = \(length)")
+                if length > maxLength {
+                    maxLength = length
+                }
+            }
+            right += 1
+        }
+        return maxLength
+    }
+}
+
+
 // 算法的时间复杂度:O(n^2)
 func findLongestSubstringWithoutRepeatingCharacters(_ str: String) -> Int {
     var max = 1
@@ -74,19 +119,34 @@ func main() {
 
     let start_1 = Date().timeIntervalSince1970
     for _ in 0...1000 {
-        let max = findLongestSubstringWithoutRepeatingCharacters(str)
+        let _ = findLongestSubstringWithoutRepeatingCharacters(str)
     }
     let end_1 = Date().timeIntervalSince1970
     print("time use = \(end_1 - start_1)")
     
     let start_2 = Date().timeIntervalSince1970
     for _ in 0...1000 {
-        let max = findLongestSubstringWithoutRepeatingCharacters2(str)
+        let _ = findLongestSubstringWithoutRepeatingCharacters2(str)
     }
     let end_2 = Date().timeIntervalSince1970
     print("time use = \(end_2 - start_2)")
 
+
+    let start_3 = Date().timeIntervalSince1970
+    for _ in 0...1000 {
+        let _ = Solution().lengthOfLongestSubstring(str)
+    }
+    let end_3 = Date().timeIntervalSince1970
+    print("time use = \(end_3 - start_3)")
+
     // print("max = \(max)")
 }
 
-main()
+// main()
+
+// let str = "abcdeffqwerasdf" // 8
+// let str = "abcabcbb" // 3
+// let str = "aab" // 2
+let str = "pwwkew" // 3
+let cnt = Solution().lengthOfLongestSubstring(str)
+print("max cnt = \(cnt)")

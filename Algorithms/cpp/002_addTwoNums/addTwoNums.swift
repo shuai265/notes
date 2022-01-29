@@ -21,12 +21,11 @@
  */
 
 class ListNode {
-    var val: Int?
+    var val: Int
     var next: ListNode?
-    init(_ x: Int) {
-        val = x
-        next = nil
-    }
+    public init() { self.val = 0; self.next = nil; }
+    public init(_ val: Int) { self.val = val; self.next = nil; }
+    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
 }
 
 func generateList(_ nums: [Int]) -> ListNode? {
@@ -44,7 +43,7 @@ func printList(_ node: ListNode) {
     var t: ListNode? = node
     var tmp:[Int] = []
     while (t != nil) {
-        tmp.append(t!.val!)
+        tmp.append(t!.val)
         t = t!.next
     }
     print("\(tmp)")
@@ -60,11 +59,11 @@ func addTwoSum(_ node1: ListNode, _ node2: ListNode) -> ListNode? {
         var sum = upper
         // 重复代码需要抽象成函数
         if tmp_l != nil {
-            sum += tmp_l!.val!
+            sum += tmp_l!.val
             tmp_l = tmp_l!.next
         }
         if tmp_r != nil {
-            sum += tmp_r!.val!
+            sum += tmp_r!.val
             tmp_r = tmp_r!.next
         }
         upper = sum/10
@@ -86,4 +85,50 @@ func main() {
     printList(sumNode!)
 }
 
-main()
+// main()
+
+class Solution {
+    func addTwoNumbers(_ l1: ListNode?, _ l2: ListNode?) -> ListNode? {
+        var h1 = l1
+        var h2 = l2 
+        var head: ListNode?
+        var tail: ListNode?
+        var carry = 0 // 进位
+        while h1 != nil || h2 != nil || carry > 0 {
+            var v = 0
+            if h1 != nil {
+                v += h1!.val
+                h1 = h1?.next
+            }
+            if h2 != nil {
+                v += h2!.val
+                h2 = h2?.next
+            }
+            if enter > 0 {
+                v += enter
+            }
+            carry = v/10
+            v = v % 10
+            var n = ListNode(v)
+            if head == nil {
+                head = n
+                tail = n
+            } else {
+                tail?.next = n
+            }
+            tail = n
+        }
+        return head
+    }
+}
+
+// let nums1 = [2, 4, 3]
+// let nums2 = [5, 6, 4]
+let nums1 = [9,9,9,9,9,9,9]
+let nums2 = [9,9,9,9]
+let node1 = generateList(nums1)
+let node2 = generateList(nums2)
+printList(node1!)
+printList(node2!)
+let sumNode = Solution().addTwoNumbers(node1, node2) 
+printList(sumNode!)

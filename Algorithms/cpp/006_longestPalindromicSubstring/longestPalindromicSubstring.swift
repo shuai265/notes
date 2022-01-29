@@ -61,7 +61,8 @@ class Solution {
 
 func main() {
     // let str = "babad"
-    let str = "bbbabab"
+    // let str = "bbbabab"
+    let str = "ccc"
 
     let result = Solution().longestPalindrome(str)
 
@@ -69,3 +70,60 @@ func main() {
 }
 
 main()
+
+
+class Solution2 {
+    func longestPalindrome(_ s: String) -> String {
+        let characters = Array(s)
+        var ans = Array<Character>()
+
+        for i in 0..<characters.count {
+            let char = characters[i]
+            // calc char center
+            // step = 1
+            var subChars = getMaxLongestSubArray(characters, i, false)
+            if subChars.count > ans.count {
+                ans = subChars
+            }
+            // calc char & char+1 center 
+            if (i < characters.count-1 && char == characters[i+1]) {
+                subChars = getMaxLongestSubArray(characters, i, true)
+                if subChars.count > ans.count {
+                    ans = subChars
+                }
+            }
+        }
+        return String(ans)
+    }
+
+    private func getMaxLongestSubArray(_ characters: Array<Character>, _ idx: Int, _ isDouble: Bool) -> Array<Character> {
+        // print("chars = \(characters), idx = \(idx), isDouble = \(isDouble)")
+        var left = idx-1
+        var right = idx+1
+        var ans = [characters[idx]]
+        if isDouble {
+            right += 1
+            ans.append(characters[idx+1])
+        }
+        while left >= 0 && right < characters.count {
+            let lc = characters[left]
+            let rc = characters[right]
+            // print("lc = \(lc), rc = \(rc), lc==rc is \(lc==rc)")
+            if lc == rc {
+                ans.insert(lc, at: 0)
+                ans.append(lc)
+            } else {
+                break
+            }
+            left -= 1
+            right += 1
+        }
+        return ans
+    }
+}
+
+// let str = "babad"
+// let str = "bbbabab"
+let str = "ccc"
+let ans = Solution2().longestPalindrome(str)
+print("ans = \(ans)")
