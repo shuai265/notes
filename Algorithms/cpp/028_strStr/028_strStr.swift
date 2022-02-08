@@ -30,6 +30,40 @@
 
 class Solution {
     func strStr(_ haystack: String, _ needle: String) -> Int {
-        
+        if needle.count == 0 {
+            return 0
+        }
+        if haystack.count < needle.count {
+            return -1
+        }
+        let hayChars = Array(haystack)
+        let needChars = Array(needle)
+        for (idx, char) in hayChars.enumerated() {
+            if hayChars.count - idx < needChars.count {
+                break
+            }
+            print("char = \(char), needChars[0] = \(needChars[0])")
+            if char == needChars[0] {
+                print("start match")
+                var match = true
+                for (j, c) in needChars.enumerated() {
+                    print("idx+j = \(idx+j),hayChars[idx+j] = \(hayChars[idx+j]), c = \(c)")
+                    
+                    if hayChars[idx+j] != c {
+                        match = false
+                        break
+                    }
+                }
+                if match {
+                    return idx
+                }
+            }
+        }
+        return -1
     }
 }
+
+let haystack = "hello"
+let needle = "ll"
+let ans = Solution().strStr(haystack, needle)
+print("ans = \(ans)")

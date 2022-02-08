@@ -57,6 +57,34 @@ class Solution {
     }
 }
 
+class Solution2 {
+    func lengthOfLongestSubstring(_ s: String) -> Int {
+        let chars = Array(s)
+        var start = 0
+        var end = 0
+        var charSet = Set<Character>()
+        var max = 0
+        // aab
+        while end < chars.count {
+            let c = chars[end]
+            if charSet.contains(c) {
+                while chars[start] != chars[end] {
+                    charSet.remove(chars[start])
+                    start += 1
+                }
+                start += 1
+            } else {
+                charSet.insert(c)
+            }
+            if end - start + 1 > max {
+                max = end - start + 1
+            }
+            end += 1
+        }
+        return max
+    }
+}
+
 
 // 算法的时间复杂度:O(n^2)
 func findLongestSubstringWithoutRepeatingCharacters(_ str: String) -> Int {
@@ -147,6 +175,7 @@ func main() {
 // let str = "abcdeffqwerasdf" // 8
 // let str = "abcabcbb" // 3
 // let str = "aab" // 2
-let str = "pwwkew" // 3
-let cnt = Solution().lengthOfLongestSubstring(str)
+// let str = "pwwkew" // 3
+// let cnt = Solution().lengthOfLongestSubstring(str)
+let cnt = Solution2().lengthOfLongestSubstring(str)
 print("max cnt = \(cnt)")

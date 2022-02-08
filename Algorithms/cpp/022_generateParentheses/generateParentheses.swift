@@ -32,9 +32,38 @@ class Solution {
 }
 
 
-let r = Solution().generateParenthesis(3)
-print("\(r)")
+// let r = Solution().generateParenthesis(3)
+// print("\(r)")
 
+
+class Solution2 {
+    func generateParenthesis(_ n: Int) -> [String] {
+        return gene("", 0, 0, n)
+    }
+
+    private func gene(_ s: String, _ lCnt: Int, _ rCnt: Int, _ n: Int) -> [String] {
+        // print("s = \(s), lCnt = \(lCnt), rCnt = \(rCnt), n = \(n)")
+
+        if rCnt == n {
+            return [s]
+        }
+        if lCnt > rCnt {
+            if lCnt < n {
+                return gene(s+"(", lCnt+1, rCnt, n) + gene(s+")", lCnt, rCnt+1, n)
+            } else {
+                return gene(s+")", lCnt, rCnt+1, n)
+            }
+        } else {
+            return gene(s+"(", lCnt+1, rCnt, n)
+        }
+    }
+}
+
+let ans2 = Solution2().generateParenthesis(3)
+print("\(ans2)")
+
+
+// two sum
 
 class Solution4 {
     func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
@@ -60,5 +89,5 @@ let t = -19
 // let d = [3,2,4]
 // let t = 6
 
-let re = Solution4().twoSum(d, t)
-print("re = \(re)")
+// let re = Solution4().twoSum(d, t)
+// print("re = \(re)")

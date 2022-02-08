@@ -15,7 +15,34 @@
 *               
 **********************************************************************************/
 
-// 使用一次循环解决问题
+public class ListNode {
+    public var val: Int
+    public var next: ListNode?
+    public init() { self.val = 0; self.next = nil; }
+    public init(_ val: Int) { self.val = val; self.next = nil; }
+    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
+}
+
+
+class Solution3 {
+    func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
+        var distance = 0
+        let fake = ListNode(0, head)
+        var node = head
+        var pre = fake
+        while node != nil {
+            node = node?.next
+            distance += 1
+            if distance > n {
+                pre = pre.next!
+            }
+        }
+        if pre.next != nil {
+            pre.next = pre.next!.next
+        }
+        return fake.next
+    }
+}
 
 /**
  * Definition for singly-linked list.
@@ -38,13 +65,6 @@
 //     }
 //  }
 
-public class ListNode {
-    public var val: Int
-    public var next: ListNode?
-    public init() { self.val = 0; self.next = nil; }
-    public init(_ val: Int) { self.val = val; self.next = nil; }
-    public init(_ val: Int, _ next: ListNode?) { self.val = val; self.next = next; }
-}
 
 class Solution2 {
     func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
@@ -120,7 +140,7 @@ func printNode(_ head: ListNode?) {
 
 
 // let nums = [1,2,3,4,5]
-// let n = 1
+// let n = 5
 let nums = [1]
 let n = 1
 
@@ -128,3 +148,7 @@ let head = listToNode(nums)
 
 var ans = Solution2().removeNthFromEnd(head, n)
 printNode(ans)
+
+let head2 = listToNode(nums)
+var ans2 = Solution3().removeNthFromEnd(head2, n)
+printNode(ans2)

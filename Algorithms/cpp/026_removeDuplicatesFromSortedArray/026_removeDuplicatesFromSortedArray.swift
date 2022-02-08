@@ -36,10 +36,24 @@ class Solution {
     }
 }
 
-//  var nums = [1,2,3,4,4,5,5]
-//  var nums = [1,2,3,4,4,5]
-var nums = [1,2,3,4,4,5,6]
+class Solution2 {
+    func removeDuplicates(_ nums: inout [Int]) -> Int {
+        for i in (0..<nums.count).reversed() {
+            // print("i = \(i)")
+            if i > 0 && nums[i] == nums[i-1] {
+                // print("delete nums[i] = \(nums[i]), i = \(i)")
+                nums.remove(at: i)
+            }
+        }
+        return nums.count
+    }
+}
+
+ var nums = [1,2,3,4,4,5,5]
+// var nums = [1,2,3,4,4,5]
+// var nums = [1,2,3,4,4,5,6]
 print("before \(nums), length = \(nums.count)")
 
-let newLen = Solution().removeDuplicates(&nums)
+// let newLen = Solution().removeDuplicates(&nums)
+let newLen = Solution2().removeDuplicates(&nums)
 print("after \(nums), length = \(newLen)")
