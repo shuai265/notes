@@ -34,6 +34,25 @@ class Solution {
 }
 
 
-let nums = [1,2,3]
+let nums = [1,2,3,0]
 let ans = Solution().permute(nums)
 print("\(ans)")
+let ans2 = Solution2().permute(nums)
+print("\(ans2)")
+
+class Solution2 {
+    func permute(_ nums: [Int]) -> [[Int]] {
+        if nums.count == 1 {
+            return [nums]
+        }
+        var ans = [[Int]]()
+        for (idx,n) in nums.enumerated() {
+            var nextNums = nums
+            nextNums.remove(at: idx)
+            for sub in permute(nextNums) {
+                ans.append([n] + sub) 
+            }
+        }
+        return ans 
+    }
+}
