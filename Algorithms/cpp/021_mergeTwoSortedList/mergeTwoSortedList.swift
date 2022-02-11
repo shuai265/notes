@@ -94,6 +94,31 @@ class Solution2 {
     }
 }
 
+class Solution3 {
+    func mergeTwoLists(_ list1: ListNode?, _ list2: ListNode?) -> ListNode? {
+        var l1 = list1
+        var l2 = list2
+        let fake = ListNode(-1)
+        var n = fake
+        while l1 != nil && l2 != nil {
+            if l1!.val < l2!.val {
+                n.next = l1
+                l1 = l1!.next
+            } else {
+                n.next = l2
+                l2 = l2!.next
+            }
+            n = n.next!
+        }
+        if l1 != nil {
+            n.next = l1
+        } else if l2 != nil {
+            n.next = l2
+        }
+        return fake.next
+    }
+}
+
 func listToNode(_ list: [Int]) -> ListNode? {
     guard list.count > 0 else {
         return nil
@@ -125,5 +150,6 @@ let l2 = [1,3,4]
 let n1 = listToNode(l1)
 let n2 = listToNode(l2)
 printNode(n1)
-let node = Solution2().mergeTwoLists(n1, n2)
+// let node = Solution2().mergeTwoLists(n1, n2)
+let node = Solution3().mergeTwoLists(n1, n2)
 printNode(node)

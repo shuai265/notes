@@ -34,3 +34,17 @@ class Solution {
         return fake.next
     }
 }
+
+class Solution2 {
+    func reverseList(_ head: ListNode?) -> ListNode? {
+        var newHead: ListNode? = nil
+        var n = head
+        while n != nil {
+            let next = n!.next
+            n!.next = newHead
+            newHead = n
+            n = next
+        }
+        return newHead
+    }
+}
