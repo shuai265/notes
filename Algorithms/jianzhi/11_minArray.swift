@@ -14,6 +14,25 @@
 
 class Solution {
     func minArray(_ numbers: [Int]) -> Int {
-
+        var l = 0
+        var r = numbers.count-1
+        while l < r {
+            let m = (l+r)/2
+            let mid = numbers[m]
+            if mid > numbers[r] {
+                l = m + 1
+            } else if mid < numbers[r] {
+                r = m
+            } else {
+                r -= 1
+            }
+        }
+        return numbers[l]
     }
 }
+
+// let nums = [3,4,5,1,2]
+// let nums = [2,2,2,0,1]
+let nums = [3,1,3]
+let ans = Solution().minArray(nums)
+print("ans = \(ans)")

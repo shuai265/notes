@@ -9,6 +9,8 @@
  * 如果 S 中不存这样的子串，则返回空字符串 ""。
  * 如果 S 中存在这样的子串，我们保证它是唯一的答案。
  */
+
+
 // 暴力解
 class Solution {
     func minWindow(_ s: String, _ t: String) -> String {
@@ -183,6 +185,72 @@ class Solution3 {
     }
 }
 
+class Solution4 {
+    func minWindow(_ s: String, _ t: String) -> String {
+        var charSet = Set<Character>()
+        var charCntMap = [Character: Int]()
+        let tChars = Array(t)
+        for c in tChars {
+            if charSet.contains(c) {
+                charCntMap[c] = charCntMap[c]! + 1
+            } else {
+                charCntMap[c] = 1
+            }
+            charSet.insert(c)
+        }
+        let sChars = Array(s)
+        var l = 0
+        var r = 0
+        var ans = sChars
+        while l <= s.count-t.count && r < sChars.count {
+            print("l = \(l), r = \(r)")
+            while charCntMap.keys.count > 0 {
+                let rChar = sChars[r]
+                if charSet.contains(rChar) && r < sChars.count {
+                    if var cnt = charCntMap[rChar] {
+                        cnt -= 1
+                        if cnt == 0 {
+                            charCntMap.removeValue(forKey: rChar)
+                        } else {
+                            charCntMap[rChar] = cnt
+                        }
+                    }
+                    if charCntMap.keys.count == 0 {
+                        break
+                    }
+                }
+                r += 1
+            }
+            print("r = \(r)")
+            if charCntMap.keys.count == 0 && r-l+1 < ans.count {
+                ans = Array(String(sChars[l...r])) // ?
+                print("update ans = \(ans)")
+            }
+            
+            // move left, count+1
+            while l < r {
+                let lChar = sChars[l]
+                l += 1
+                if charSet.contains(lChar) {
+                    if var cnt = charCntMap[lChar] {
+                        charCntMap[lChar] = cnt + 1
+                    } else {
+                        charCntMap[lChar] = 1
+                    }
+                    break
+                } else {
+                    if charCntMap.keys.count == 0 && r-l+1 < ans.count {
+                        // ans = sChars[l...r] // ?
+                        ans = Array(String(sChars[l...r])) // ?
+                        print("update ans = \(ans)")
+                    }
+                }
+            }
+        }
+        return String(ans)
+    }
+}
+
 
 let S = "ADOBECODEBANC"
 let T = "ABC"
@@ -209,6 +277,9 @@ let T = "ABC"
 
 let ans = Solution3().minWindow(S, T)
 print("ans=\(ans)")
+
+let ans4 = Solution4().minWindow(S, T)
+print("ans4=\(ans4)")
 
 // let a = Array("abc")
 // for c in a {
