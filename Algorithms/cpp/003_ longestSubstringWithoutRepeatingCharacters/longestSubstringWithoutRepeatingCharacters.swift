@@ -170,6 +170,7 @@ func main() {
     // print("max = \(max)")
 }
 
+<<<<<<< Updated upstream
 // main()
 
 // let str = "abcdeffqwerasdf" // 8
@@ -179,3 +180,41 @@ func main() {
 // let cnt = Solution().lengthOfLongestSubstring(str)
 let cnt = Solution2().lengthOfLongestSubstring(str)
 print("max cnt = \(cnt)")
+=======
+main()
+
+// abcdabdef
+class Solution {
+    func findLongestSubString(_ str: String) -> Int {
+        var l = 0
+        var r = 0
+        var charSet = Set<Character>()
+        // var cnt = 0
+        var max = 0
+        for (idx,char) in str.enumerated() {
+            if charSet.contains(char) {
+                while l < r {
+                    let lChar = str[str.index(str.startIndex, offsetBy: l)]
+                    charSet.remove(lChar)
+                    l += 1
+                    if char ==  lChar{
+                        break
+                    }
+                }
+            } else {
+                charSet.insert(char)
+                // cnt += 1
+                r += 1
+            }
+            if charSet.count > max {
+                max = charSet.count
+            }
+        }
+        return max
+    }
+}
+
+let str = "abcdeffqwerasdf3wafgpower["
+let ans = Solution().findLongestSubString(str)
+print("ans = \(ans)")
+>>>>>>> Stashed changes

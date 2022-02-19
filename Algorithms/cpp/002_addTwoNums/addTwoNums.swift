@@ -88,6 +88,7 @@ func main() {
 // main()
 
 class Solution {
+<<<<<<< Updated upstream
     func addTwoNumbers(_ l1: ListNode?, _ l2: ListNode?) -> ListNode? {
         var h1 = l1
         var h2 = l2 
@@ -126,9 +127,51 @@ class Solution {
 // let nums2 = [5, 6, 4]
 let nums1 = [9,9,9,9,9,9,9]
 let nums2 = [9,9,9,9]
+=======
+    func addTwoSum(_ node1: ListNode, _ node2: ListNode) -> ListNode {
+        var ans = ListNode(-1)
+        var n1: ListNode? = node1
+        var n2: ListNode? = node2
+        var upper = 0
+        var p = ans
+        while (n1 != nil && n2 != nil) {
+            var sum = n1!.val! + n2!.val! + upper
+            upper = sum/10
+            sum -= upper*10
+            let newNode = ListNode(sum)
+            p.next = newNode
+            p = newNode
+            n1 = n1!.next
+            n2 = n2!.next
+        }
+        if n2 != nil {
+            n1 = n2
+        }
+        while n1 != nil {
+            var sum = n1!.val! + n2!.val! + upper
+            upper = sum/10
+            sum -= upper*10
+            let newNode = ListNode(sum)
+            p.next = newNode
+            p = newNode
+            n1 = n1!.next
+        }
+
+        return ans.next!
+    }
+}
+
+let nums1 = [2, 4, 3]
+let nums2 = [5, 6, 4]
+>>>>>>> Stashed changes
 let node1 = generateList(nums1)
 let node2 = generateList(nums2)
 printList(node1!)
 printList(node2!)
+<<<<<<< Updated upstream
 let sumNode = Solution().addTwoNumbers(node1, node2) 
 printList(sumNode!)
+=======
+let sumNode = Solution().addTwoSum(node1!, node2!) 
+printList(sumNode)
+>>>>>>> Stashed changes
